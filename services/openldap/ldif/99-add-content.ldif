@@ -13,19 +13,19 @@ objectClass: posixGroup
 cn: admins
 gidNumber: 5000
 
-# # Create Users
-# dn: uid=james,ou=People,dc=xmansion,dc=local
-# objectClass: inetOrgPerson
-# objectClass: posixAccount
-# objectClass: shadowAccount
-# uid: james
-# sn: veitch
-# givenName: James
-# cn: James Veitch
-# displayName: James Veitch
-# uidNumber: 10000
-# gidNumber: 5000
-# userPassword: password
-# gecos: James Veitch
-# loginShell: /bin/bash
-# homeDirectory: /home/james
+# Create Users
+dn: uid=james,ou=People,dc=xmansion,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: james
+sn: veitch
+givenName: James
+cn: James Veitch
+displayName: James Veitch
+uidNumber: 10000
+gidNumber: 5000
+userPassword: password
+gecos: James Veitch
+loginShell: /bin/bash
+homeDirectory: /home/james

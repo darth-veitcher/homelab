@@ -47,12 +47,45 @@ objectClass: simpleSecurityObject
 objectClass: organizationalRole
 cn: admin
 description: LDAP administrator
-userPassword:: e1NTSEF9NDdQbXNSc2VOVHVaU2hGeUh5RXYzbFI3cE1DejFtUkc=
+userPassword:: e1NTSEF9N1UyOFVFbEY5WWlZS2hIOVBwdjNoNXJsZ1ZHQ0RPUnQ=
+
+# People, xmansion.local
+dn: ou=People,dc=xmansion,dc=local
+objectClass: organizationalUnit
+ou: People
+
+# Groups, xmansion.local
+dn: ou=Groups,dc=xmansion,dc=local
+objectClass: organizationalUnit
+ou: Groups
+
+# admins, Groups, xmansion.local
+dn: cn=admins,ou=Groups,dc=xmansion,dc=local
+objectClass: posixGroup
+cn: admins
+gidNumber: 5000
+
+# james, People, xmansion.local
+dn: uid=james,ou=People,dc=xmansion,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: james
+sn: veitch
+givenName: James
+cn: James Veitch
+displayName: James Veitch
+uidNumber: 10000
+gidNumber: 5000
+userPassword:: cGFzc3dvcmQ=
+gecos: James Veitch
+loginShell: /bin/bash
+homeDirectory: /home/james
 
 # search result
 search: 2
 result: 0 Success
 
-# numResponses: 3
-# numEntries: 2
+# numResponses: 7
+# numEntries: 6
 ```
