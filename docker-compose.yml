@@ -8,12 +8,12 @@ services:
       context: ./services/openldap
       dockerfile: Dockerfile
     env_file: ./services/openldap/openldap.env
-    command: --copy-service -l debug
+    # command: --copy-service -l debug
     networks:
       - traefik_public
       - auth_internal
-    volumes:
-      - ./services/openldap/ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom
+    # volumes:
+    #   - ./services/openldap/ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom
 
 networks:
   # Used to expose openldap to keycloak
