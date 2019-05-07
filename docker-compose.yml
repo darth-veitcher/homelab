@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  openldap:
+    container_name: ldap
+    # image: osixia/openldap
+    build:
+      context: ./services/openldap
+      dockerfile: Dockerfile
+    env_file: ./services/openldap/openldap.env
+    command: --copy-service -l debug
+    networks:
+      - traefik_public
+      - auth_internal
+    volumes:
+      - ./services/openldap/ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom
+
+networks:
+  # Used to expose openldap to keycloak
+  traefik_public:
+    external: true
+
+  # Used to expose openldap to other apps which want to talk to LDAP
+  auth_internal:
+    external: true    
