@@ -5,6 +5,17 @@ up-dev:
 stop-dev:
 	docker-compose stop && docker-compose rm -f
 
+# Homelab
+up-lab:
+	# scp across the configs
+	rsync -r services rancher@192.168.0.61:~/
+	# Run docker-compose remotely
+	docker-compose stop && docker-compose rm -f
+	docker-compose up --build
+
+stop-lab:
+	docker-compose stop && docker-compose rm -f
+
 up-prod:
 	# specify base and pass in additional config
 	docker-compose -f docker-compose.yml -f docker-compose-prod.yml stop && \

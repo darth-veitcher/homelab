@@ -9,26 +9,31 @@ services:
       dockerfile: Dockerfile
     env_file: ./services/openldap/openldap.env
     # command: --copy-service -l debug
-    networks:
-      - traefik_public
-      - auth_internal
-    volumes:
+    environment:
       # /etc/localtime fails on MacOS due to known bugs
       # https://github.com/docker/for-mac/issues/2396#issuecomment-444903734
       # https://github.com/docker/for-mac/issues/2396#issuecomment-446515510
+      # It's also missing from RancherOS https://github.com/rancher/os/issues/2218
+      # so we'll create a local environment variable:
       # export ETC_LOCALTIME=$(readlink /etc/localtime)
       # export LOCALTZ=$(echo $(readlink /etc/localtime) | awk -F'\/' '{print $6"/"$7}')
-      # - /etc/localtime:/etc/localtime:ro
-      - ${ETC_LOCALTIME}:/etc/localtime:ro
+      - TZ=${LOCALTZ}
+    networks:
+      - traefik_public
+      - auth_internal
 
   keycloak:
     container_name: keycloak
     image: jboss/keycloak
     env_file: ./services/keycloak/keycloak.env
-    volumes:
-      - ${ETC_LOCALTIME}:/etc/localtime:ro
+    environment:
+      - TZ=${LOCALTZ}
     networks:
+      - default
       - traefik_public
+    ports:
+      - 9990:9990
+      - 8080:8080
     labels:
       - traefik.frontend.rule=Host:keycloak.xmansion.local
       - traefik.port=8080
@@ -36,17 +41,17 @@ services:
   keycloak-db:
     container_name: keycloak_db
     env_file: ./services/keycloak/keycloak.env
+    environment:
+      - TZ=${LOCALTZ}
     image: postgres:10.1
-    volumes:
-      - ${ETC_LOCALTIME}:/etc/localtime:ro
     networks:
       - traefik_public
   keycloak-db-backup:
     container_name: keycloak_backup
     env_file: ./services/keycloak/keycloak-backup.env
+    environment:
+      - TZ=${LOCALTZ}
     image: postgres:10.1
-    volumes:
-      - ${ETC_LOCALTIME}:/etc/localtime:ro
     entrypoint: |
       bash -c 'bash -s <<EOF
       trap "break;exit" SIGHUP SIGINT SIGTERM
