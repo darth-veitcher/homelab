@@ -13,8 +13,9 @@ services:
       # https://github.com/docker/for-mac/issues/2396#issuecomment-446515510
       # It's also missing from RancherOS https://github.com/rancher/os/issues/2218
       # so we'll create a local environment variable:
-      # export ETC_LOCALTIME=$(readlink /etc/localtime)
-      # export LOCALTZ=$(echo $(readlink /etc/localtime) | awk -F'\/' '{print $6"/"$7}')
+      #   export ETC_LOCALTIME=$(readlink /etc/localtime)
+      #   export LOCALTZ=$(echo $(readlink /etc/localtime) | awk -F'\/' '{print $6"/"$7}')
+      # This essentially becomes a string of type Europe/London (for example)
       - TZ=${LOCALTZ}
     networks:
       - traefik_public
