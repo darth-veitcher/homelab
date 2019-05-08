@@ -19,9 +19,9 @@ objectClass: inetOrgPerson
 objectClass: posixAccount
 objectClass: shadowAccount
 uid: james
-sn: veitch
 givenName: James
-cn: James Veitch
+cn: James
+sn: Veitch
 displayName: James Veitch
 uidNumber: 10000
 gidNumber: 5000
