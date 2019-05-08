@@ -1,0 +1,38 @@
+#!/bin/sh
+set -euo pipefail
+
+PREVIOUS_IP=""
+CURRENT_IP=""
+
+function update_ip() {
+    if [[ ${ANONDNS} && ${TOKEN} ]]
+    then
+        curl --silent --show-error --retry 10 --fail \
+            https://anondns.net/api/set/$ANONDNS/$TOKEN
+    else
+        echo "$(date): SUBDOMAIN or TOKEN variables not set"
+        exit 1
+    fi
+}
+
+function check_current_ip() {
+    # Function to get our external ip and compare to what we had previously
+    CURRENT_IP=$(curl --silent --show-error --retry 10 --fail 'https://api.ipify.org?format=text')
+    if [ "$CURRENT_IP" != "$PREVIOUS_IP" ]  # want to return IP!=CURRENT_IP as true (return 0)
+    then
+        # If we're here then the IP has changed
+        echo "$(date): Container IP is $CURRENT_IP"
+        PREVIOUS_IP=$CURRENT_IP
+
+        # Update AnonDNS
+        update_ip
+    fi
+}
+
+# Every [x] seconds we check for IP address change
+while true
+do
+    check_current_ip
+    sleep 60
+done
+    
