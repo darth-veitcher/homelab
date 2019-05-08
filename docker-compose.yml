@@ -24,7 +24,9 @@ services:
 
   keycloak:
     container_name: keycloak
-    image: jboss/keycloak
+    build:
+      context: ./services/keycloak
+      dockerfile: Dockerfile
     env_file: ./services/keycloak/keycloak.env
     environment:
       - TZ=${LOCALTZ}
