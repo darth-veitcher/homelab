@@ -12,8 +12,53 @@ services:
     networks:
       - traefik_public
       - auth_internal
-    # volumes:
-    #   - ./services/openldap/ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom
+    volumes:
+      # /etc/localtime fails on MacOS due to known bugs
+      # https://github.com/docker/for-mac/issues/2396#issuecomment-444903734
+      # https://github.com/docker/for-mac/issues/2396#issuecomment-446515510
+      # export ETC_LOCALTIME=$(readlink /etc/localtime)
+      # export LOCALTZ=$(echo $(readlink /etc/localtime) | awk -F'\/' '{print $6"/"$7}')
+      # - /etc/localtime:/etc/localtime:ro
+      - ${ETC_LOCALTIME}:/etc/localtime:ro
+
+  keycloak:
+    container_name: keycloak
+    image: jboss/keycloak
+    env_file: ./services/keycloak/keycloak.env
+    volumes:
+      - ${ETC_LOCALTIME}:/etc/localtime:ro
+    networks:
+      - traefik_public
+    labels:
+      - traefik.frontend.rule=Host:keycloak.xmansion.local
+      - traefik.port=8080
+      - trafeik.docker.network=traefik_public
+  keycloak-db:
+    container_name: keycloak_db
+    env_file: ./services/keycloak/keycloak.env
+    image: postgres:10.1
+    volumes:
+      - ${ETC_LOCALTIME}:/etc/localtime:ro
+    networks:
+      - traefik_public
+  keycloak-db-backup:
+    container_name: keycloak_backup
+    env_file: ./services/keycloak/keycloak-backup.env
+    image: postgres:10.1
+    volumes:
+      - ${ETC_LOCALTIME}:/etc/localtime:ro
+    entrypoint: |
+      bash -c 'bash -s <<EOF
+      trap "break;exit" SIGHUP SIGINT SIGTERM
+      sleep 2m
+      while /bin/true; do
+        pg_dump -Fc > /dump/dump_\`date +%d-%m-%Y"_"%H_%M_%S\`.psql
+        (ls -t /dump/dump*.psql|head -n $$BACKUP_NUM_KEEP;ls /dump/dump*.psql)|sort|uniq -u|xargs rm -- {}
+        sleep $$BACKUP_FREQUENCY
+      done
+      EOF'
+    networks:
+      - traefik_public
 
 networks:
   # Used to expose openldap to keycloak

@@ -5,7 +5,7 @@ This repository contains docker details, notes and general setup musings around 
 * [ ] Containerised deployment
     * [ ] Single node (docker)
 * [ ] Identity and Access Management
-    * [ ] OpenLDAP via [osixia/openldap](https://github.com/osixia/docker-openldap)
+    * [x] OpenLDAP via [osixia/openldap](https://github.com/osixia/docker-openldap)
     * [ ] Multi-Factor Auth via [Keycloak](https://github.com/clems4ever/authelia)
         * [ ] Integrated with [Traefik](https://traefik.io) reverse proxy with [ForwardAuth](https://docs.traefik.io/v2.0/middlewares/forwardauth/) settings.
 
