@@ -1,4 +1,4 @@
-# Keycloak
+# Keycloak | <small>Authentication and Authorisation for services</small>
 To configure Keycloak to work with OpenLDAP we need to login and setup our `ldap` container as a `User Federation` provider.
 
 Key setting as follows:
