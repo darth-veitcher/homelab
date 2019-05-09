@@ -18,21 +18,18 @@ defaultEntryPoints = ["http", "https"]
   address = ":443"
     [entryPoints.https.tls]
 
-[file]
-  watch = true
-  filename = "/etc/traefik/rules.toml"
-
 # Let's encrypt configuration
 [acme]
 email = "admin@xmansion.anondns.net" #any email id will work
-storage="/etc/traefik/acme/acme.json"
+storage = "/etc/traefik/acme.json"
 entryPoint = "https"
-acmeLogging=true
+[acme.tlsChallenge]
+acmeLogging = true
 onDemand = false # create certificate when container is created
 onHostRule = true
-  # Use a HTTP-01 acme challenge rather than TLS-SNI-01 challenge
-  [acme.httpChallenge]
-  entryPoint = "http"
+[[acme.domains]]
+  main = "xmansion.anondns.net"
+  # sans = ["test1.local1.com", "test2.local1.com"]
 
 # Connection to docker host system (docker.sock)
 [docker]

@@ -5,9 +5,9 @@ services:
     # image: osixia/openldap
     container_name: ldap
     build:
-      context: ./services/openldap
+      context: ${ROOT_DIR}/services/openldap
       dockerfile: Dockerfile
-    env_file: ./services/openldap/openldap.env
+    env_file: ${ROOT_DIR}/services/openldap/openldap.env
     environment:
       # /etc/localtime fails on MacOS due to known bugs
       # https://github.com/docker/for-mac/issues/2396#issuecomment-444903734
@@ -27,26 +27,27 @@ services:
   keycloak:
     container_name: keycloak
     build:
-      context: ./services/keycloak
+      context: ${ROOT_DIR}/services/keycloak
       dockerfile: Dockerfile
-    env_file: ./services/keycloak/keycloak.env
+    env_file: ${ROOT_DIR}/services/keycloak/keycloak.env
     environment:
       - TZ=${LOCALTZ}
     networks:
       - traefik_public
-    ports:
-      - 9990:9990
-      - 8080:8080
+    # Ports aren't required when we're using Traefik to reverse proxy
+    # ports:
+    #   - 9990:9990
+    #   - 8080:8080
     labels:
       - "trafeik.enable=true"
       - "traefik.backend=keycloak"
-      # - "traefik.frontend.rule=Host:${ANONDNS}; PathPrefixStrip: /keycloak"
-      - "traefik.frontend.rule=Host:${ANONDNS}"
+      # Auth
+      - "traefik.frontend.rule=Host:${ANONDNS}; PathPrefix: /auth"
       - "traefik.port=8080"
       - "trafeik.docker.network=traefik_public"
   keycloak-db:
     container_name: keycloak_db
-    env_file: ./services/keycloak/keycloak.env
+    env_file: ${ROOT_DIR}/services/keycloak/keycloak.env
     environment:
       - TZ=${LOCALTZ}
     image: postgres:10.1
@@ -54,7 +55,7 @@ services:
       - traefik_public
   keycloak-db-backup:
     container_name: keycloak_backup
-    env_file: ./services/keycloak/keycloak-backup.env
+    env_file: ${ROOT_DIR}/services/keycloak/keycloak-backup.env
     environment:
       - TZ=${LOCALTZ}
     image: postgres:10.1
@@ -74,7 +75,7 @@ services:
   ipupdater:
     container_name: dyndns
     build:
-      context: ./services/ipupdater
+      context: ${ROOT_DIR}/services/ipupdater
       dockerfile: Dockerfile
     environment:
       - ANONDNS=${ANONDNS}
@@ -87,4 +88,4 @@ networks:
 
   # Used to expose openldap to other apps which want to talk to LDAP
   auth_internal:
-    external: true    
+    external: true

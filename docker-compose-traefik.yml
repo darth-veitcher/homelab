@@ -2,10 +2,10 @@ version: '3'
 
 services:
   traefik:
-    env_file: .env
+    env_file: ${ROOT_DIR}/.env
     container_name: traefik
     image: traefik
-    command: --web --docker --docker.watch --docker.domain=${ANONDNS} --logLevel=DEBUG
+    command: --docker --docker.watch --docker.domain=${ANONDNS} --logLevel=DEBUG
     networks:
       - traefik_public
       - auth_internal
@@ -14,17 +14,14 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      # - ./services/traefik/traefik.toml:/traefik.toml:ro
-      # - ./services/traefik/acme.json:/acme.json
-      - ./services/traefik:/etc/traefik
+      - /var/run/docker.sock:/var/run/docker.sock:ro  # allow traefik to monitor container status
+      - ${ROOT_DIR}/services/traefik:/etc/traefik  # mount configs
     labels:
       - "trafeik.enable=true"
       - "traefik.backend=traefik"
       - "traefik.frontend.rule=Host:${ANONDNS}; PathPrefixStrip: /traefik"
       - "traefik.port=8080"
       - "traefik.docker.network=traefik_public"
-      # - "traefik.frontend.headers.SSLRedirect=true"
 
 networks:
   # Used to expose openldap to keycloak
