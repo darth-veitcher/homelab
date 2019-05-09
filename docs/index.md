@@ -10,8 +10,10 @@ This repository contains docker details, notes and general setup musings around 
     * [x] Multi-Factor Auth via [Keycloak](https://github.com/clems4ever/authelia)
         * [x] Integrated with LDAP for users and groups
         * [ ] Integrated with [Traefik](https://traefik.io) reverse proxy 
-            * [ ] with [ForwardAuth](https://docs.traefik.io/v2.0/middlewares/forwardauth/) settings.
+            * [ ] with [ForwardAuth](https://docs.traefik.io/v2.0/middlewares/forwardauth/) settings; or
+            * [ ] with [Gatekeeper]()
 * [x] Free, anonymous Dynamic DNS
+* [ ] Local DNS with dnsmasq
 * [ ] [LetsEncrypt](https://letsencrypt.org) trusted SSL for external services
 * [ ] Public Key Infrastructure (PKI) with [cfssl](https://github.com/cloudflare/cfssl) for internal services
 * [ ] Secure VPN access for users
