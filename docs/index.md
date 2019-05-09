@@ -4,7 +4,7 @@ This repository contains docker details, notes and general setup musings around 
 ## High level requirements and roadmap
 * [ ] Containerised deployment
     * [ ] Single node (docker)
-* [ ] Identity and Access Management
+* [ ] Identity and Access Management (IDAM)
     * [x] OpenLDAP via [osixia/openldap](https://github.com/osixia/docker-openldap)
         * [x] Initial seeding of groups and users
     * [x] Multi-Factor Auth via [Keycloak](https://github.com/clems4ever/authelia)
@@ -13,6 +13,9 @@ This repository contains docker details, notes and general setup musings around 
             * [ ] with [ForwardAuth](https://docs.traefik.io/v2.0/middlewares/forwardauth/) settings.
 * [x] Free, anonymous Dynamic DNS
 * [ ] [LetsEncrypt](https://letsencrypt.org) trusted SSL for external services
-* [ ] Public Key Infrastructure with [cfssl](https://github.com/cloudflare/cfssl) for internal services
+* [ ] Public Key Infrastructure (PKI) with [cfssl](https://github.com/cloudflare/cfssl) for internal services
+* [ ] Secure VPN access for users
+    * [ ] Integrated with PKI
+    * [ ] Integrated with IDAM, Keycloak+OpenLDAP
 
 
