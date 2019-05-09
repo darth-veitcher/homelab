@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  traefik:
+    env_file: .env
+    container_name: traefik
+    image: traefik
+    command: --web --docker --docker.watch --docker.domain=${ANONDNS} --logLevel=DEBUG
+    networks:
+      - traefik_public
+      - auth_internal
+    ports:
+        # [[remote_ip:]remote_port[-remote_port]:]port[/protocol]
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # - ./services/traefik/traefik.toml:/traefik.toml:ro
+      # - ./services/traefik/acme.json:/acme.json
+      - ./services/traefik:/etc/traefik
+    labels:
+      - "trafeik.enable=true"
+      - "traefik.backend=traefik"
+      - "traefik.frontend.rule=Host:${ANONDNS}; PathPrefixStrip: /traefik"
+      - "traefik.port=8080"
+      - "traefik.docker.network=traefik_public"
+      # - "traefik.frontend.headers.SSLRedirect=true"
+
+networks:
+  # Used to expose openldap to keycloak
+  traefik_public:
+    external: true
+
+  # Used to expose openldap to other apps which want to talk to LDAP
+  auth_internal:
+    external: true    

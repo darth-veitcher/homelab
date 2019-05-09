@@ -33,15 +33,17 @@ services:
     environment:
       - TZ=${LOCALTZ}
     networks:
-      - default
       - traefik_public
     ports:
       - 9990:9990
       - 8080:8080
     labels:
-      - traefik.frontend.rule=Host:keycloak.xmansion.local
-      - traefik.port=8080
-      - trafeik.docker.network=traefik_public
+      - "trafeik.enable=true"
+      - "traefik.backend=keycloak"
+      # - "traefik.frontend.rule=Host:${ANONDNS}; PathPrefixStrip: /keycloak"
+      - "traefik.frontend.rule=Host:${ANONDNS}"
+      - "traefik.port=8080"
+      - "trafeik.docker.network=traefik_public"
   keycloak-db:
     container_name: keycloak_db
     env_file: ./services/keycloak/keycloak.env
