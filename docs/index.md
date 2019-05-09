@@ -8,5 +8,6 @@ This repository contains docker details, notes and general setup musings around 
     * [x] OpenLDAP via [osixia/openldap](https://github.com/osixia/docker-openldap)
     * [ ] Multi-Factor Auth via [Keycloak](https://github.com/clems4ever/authelia)
         * [ ] Integrated with [Traefik](https://traefik.io) reverse proxy with [ForwardAuth](https://docs.traefik.io/v2.0/middlewares/forwardauth/) settings.
+* [ ] Public Key Infrastructure with [cfssl](https://github.com/cloudflare/cfssl) for internal services
 
 
