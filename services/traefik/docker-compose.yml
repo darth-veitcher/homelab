@@ -27,7 +27,7 @@ networks:
   # Used to expose openldap to keycloak
   traefik_public:
     external: true
-
+  
   # Used to expose openldap to other apps which want to talk to LDAP
   auth_internal:
-    external: true    
+    external: true

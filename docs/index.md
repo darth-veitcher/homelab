@@ -4,6 +4,9 @@ This repository contains docker details, notes and general setup musings around 
 ## High level requirements and roadmap
 * [ ] Containerised deployment
     * [ ] Single node (docker)
+    * [ ] Services can be executed 
+        * [ ] individually
+        * [ ] single monolithoic command
 * [ ] Identity and Access Management (IDAM)
     * [x] OpenLDAP via [osixia/openldap](https://github.com/osixia/docker-openldap)
         * [x] Initial seeding of groups and users

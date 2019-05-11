@@ -1,6 +1,31 @@
 version: '3'
 
 services:
+
+  traefik:
+    env_file: ${ROOT_DIR}/.env
+    container_name: traefik
+    image: traefik
+    command: --docker --docker.watch --docker.domain=${ANONDNS} --logLevel=DEBUG
+    networks:
+      - traefik_public
+      - auth_internal
+    ports:
+        # As we're using Traefik as a revers proxy it's only this container
+        # that will actually need to expose any ports.
+        # [[remote_ip:]remote_port[-remote_port]:]port[/protocol]
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro  # allow traefik to monitor container status
+      - ${ROOT_DIR}/services/traefik:/etc/traefik  # mount configs
+    labels:
+      - "trafeik.enable=true"
+      - "traefik.backend=traefik"
+      - "traefik.frontend.rule=Host:${ANONDNS}; PathPrefixStrip: /traefik"
+      - "traefik.port=8080"
+      - "traefik.docker.network=traefik_public"
+
   openldap:
     # image: osixia/openldap
     container_name: ldap
@@ -21,8 +46,6 @@ services:
     networks:
       - traefik_public
       - auth_internal
-    ports:
-      - 389:389
 
   keycloak:
     container_name: keycloak
@@ -34,10 +57,6 @@ services:
       - TZ=${LOCALTZ}
     networks:
       - traefik_public
-    # Ports aren't required when we're using Traefik to reverse proxy
-    # ports:
-    #   - 9990:9990
-    #   - 8080:8080
     labels:
       - "trafeik.enable=true"
       - "traefik.backend=keycloak"

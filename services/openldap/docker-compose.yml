@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  openldap:
+    env_file: ${ROOT_DIR}/.env
+    # image: osixia/openldap
+    container_name: ldap
+    build:
+      context: ${ROOT_DIR}/services/openldap
+      dockerfile: Dockerfile
+    env_file: ${ROOT_DIR}/services/openldap/openldap.env
+    environment:
+      # /etc/localtime fails on MacOS due to known bugs
+      # https://github.com/docker/for-mac/issues/2396#issuecomment-444903734
+      # https://github.com/docker/for-mac/issues/2396#issuecomment-446515510
+      # It's also missing from RancherOS https://github.com/rancher/os/issues/2218
+      # so we'll create a local environment variable:
+      #   export ETC_LOCALTIME=$(readlink /etc/localtime)
+      #   export LOCALTZ=$(echo $(readlink /etc/localtime) | awk -F'\/' '{print $6"/"$7}')
+      # This essentially becomes a string of type Europe/London (for example)
+      - TZ=${LOCALTZ}
+    networks:
+      - traefik_public
+      - auth_internal
+
+networks:
+  # Used to expose openldap to keycloak
+  traefik_public:
+    external: true
+  
+  # Used to expose openldap to other apps which want to talk to LDAP
+  auth_internal:
+    external: true
