@@ -1,4 +1,0 @@
-# Documentation
-mkdocs==1.0.4
-mkdocs-material==4.2.0
-pymdown-extensions==6.0

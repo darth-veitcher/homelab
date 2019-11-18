@@ -1,12 +1,16 @@
 # Darth-Veitcher's Homelab 
 This repository contains docker details, notes and general setup musings around configuring my (overkill) homelab end-to-end. This has been deliberately done **the hard way** (i.e. handcrafted from scratch) wherever possible so that I understand what's going on under the hood. I'm not a big fan of black boxes.
 
-## High level requirements and roadmap
-* [ ] Containerised deployment
-    * [ ] Single node (docker)
-    * [ ] Services can be executed 
-        * [ ] individually
-        * [ ] single monolithoic command
+## High level requirements, roadmap and table of contents
+* [ ] Reference Architecture (appendix)
+* [ ] Configuring physical nodes
+* [ ] Kubernetes as the underlying orchestration for containers
+
+
+
+
+
+
 * [ ] Identity and Access Management (IDAM)
     * [x] OpenLDAP via [osixia/openldap](https://github.com/osixia/docker-openldap)
         * [x] Initial seeding of groups and users

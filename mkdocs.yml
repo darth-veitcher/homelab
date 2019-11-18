@@ -6,6 +6,15 @@ site_description: 'An overkill homelab setup'
 repo_name: 'darth-veitcher/homelab'
 repo_url: 'https://github.com/darth-veitcher/homelab'
 
+# Nav
+nav:
+  - 'Introduction': 'index.md'
+  - 'Infrastructure':
+    - 'Host Configuration': '001.configuring.physical.nodes.md'
+    # - 'Custom Domain': 'infrastructure/01_customdomain.md'
+    # - 'Reverse Proxy': 'infrastructure/02_traefikproxy.md'
+    # - 'OpenVPN': 'infrastructure/03_vpn.md'
+
 # Use the Material theme config
 # https://squidfunk.github.io/mkdocs-material/getting-started/
 theme:
@@ -22,6 +31,8 @@ extra:
 # Extensions
 # https://squidfunk.github.io/mkdocs-material/extensions/pymdown/
 markdown_extensions:
+  - toc:
+      baselevel: 3
   - pymdownx.arithmatex
   - pymdownx.betterem:
       smart_enable: all
@@ -40,3 +51,7 @@ markdown_extensions:
   - pymdownx.tilde
 extra_javascript:
   - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'
+plugins:
+  - search
+  - minify:
+      minify_html: true
