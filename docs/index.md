@@ -3,28 +3,26 @@ This repository contains docker details, notes and general setup musings around 
 
 ## High level requirements, roadmap and table of contents
 * [ ] Reference Architecture (appendix)
-* [ ] Configuring physical nodes
-* [ ] Kubernetes as the underlying orchestration for containers
-
-
-
-
-
-
-* [ ] Identity and Access Management (IDAM)
-    * [x] OpenLDAP via [osixia/openldap](https://github.com/osixia/docker-openldap)
-        * [x] Initial seeding of groups and users
-    * [x] Multi-Factor Auth via [Keycloak](https://github.com/clems4ever/authelia)
-        * [x] Integrated with LDAP for users and groups
-        * [x] Integrated with [Traefik](https://traefik.io) reverse proxy 
-            * [ ] with [ForwardAuth](https://docs.traefik.io/v2.0/middlewares/forwardauth/) settings; or
-            * [ ] with [Gatekeeper]()
-* [x] Free, anonymous Dynamic DNS
-* [ ] Local DNS with dnsmasq
-* [x] [LetsEncrypt](https://letsencrypt.org) trusted SSL for external services
-* [ ] Public Key Infrastructure (PKI) with [cfssl](https://github.com/cloudflare/cfssl) for internal services
+* [x] Configuring physical nodes
+    * [x] VPN between nodes
+    * [ ] Basic hardening
+* [ ] Configuring kubernetes
+    * [x] Networking and Network Policy via Canal
+    * [ ] Service Discovery via CoreDNS
+    * [ ] Cloudflare integration with `external-dns`
+    * [ ] Ceph storage via Rook
+    * [ ] TLS certificates with Cert-Manager
+        * [ ] Self-signed Root CA for internal services
+        * [ ] Let's Encrypt for external services
+    * [ ] Identity and Access Management with OIDC
+        * [ ] OpenLDAP as directory service
+        * [ ] KeyCloak/Dex as identity provider
+            * [ ] Multi-factor auth for key admin users
+        * [ ] OIDC Forward Auth for additional fine grained RBAC
 * [ ] Secure VPN access for users
     * [ ] Integrated with PKI
     * [ ] Integrated with IDAM, Keycloak+OpenLDAP
 
-
+* [ ] Services Stack: Developer
+    * [ ] Docker registry
+    * [ ] Gitea

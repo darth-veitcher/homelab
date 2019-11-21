@@ -10,10 +10,16 @@ repo_url: 'https://github.com/darth-veitcher/homelab'
 nav:
   - 'Introduction': 'index.md'
   - 'Infrastructure':
-    - 'Host Configuration': '001.configuring.physical.nodes.md'
-    # - 'Custom Domain': 'infrastructure/01_customdomain.md'
-    # - 'Reverse Proxy': 'infrastructure/02_traefikproxy.md'
-    # - 'OpenVPN': 'infrastructure/03_vpn.md'
+    - 'Host Configuration': '01.infrastructure/01.hosts/00.configuring.physical.nodes.md'
+    - 'Hosts':
+      - 'On-prem':
+        - 'Compute (Banks)': '01.infrastructure/01.hosts/01.banks.md'
+        - 'Storage (Clarke)': '01.infrastructure/01.hosts/02.clarke.md'
+      - 'Cloud':
+        - 'Compute (Donaldson)': '01.infrastructure/01.hosts/03.donaldson.md'
+        - 'Ingress (Hamilton)': '01.infrastructure/01.hosts/04.hamilton.md'
+    - 'Kubernetes Configuration': '01.infrastructure/02.kubernetes/00.configuring.kubernetes.md'
+    - 'CEPH Storage with Rook': '01.infrastructure/02.kubernetes/01.setup.ceph.storage.with.rook.md'
 
 # Use the Material theme config
 # https://squidfunk.github.io/mkdocs-material/getting-started/
