@@ -20,6 +20,10 @@ nav:
         - 'Ingress (Hamilton)': '01.infrastructure/01.hosts/04.hamilton.md'
     - 'Kubernetes Configuration': '01.infrastructure/02.kubernetes/00.configuring.kubernetes.md'
     - 'CEPH Storage with Rook': '01.infrastructure/02.kubernetes/01.setup.ceph.storage.with.rook.md'
+  - 'Snippets':
+    - 'Storage': '99.snippets/storage.disks.md'
+    - 'Kubernetes': '99.snippets/kubernetes.md'
+    - 'Ceph': '99.snippets/ceph.md'
 
 # Use the Material theme config
 # https://squidfunk.github.io/mkdocs-material/getting-started/
