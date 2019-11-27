@@ -9,7 +9,15 @@ This repository contains docker details, notes and general setup musings around 
 * [ ] Configuring kubernetes
     * [x] Networking and Network Policy via Canal
     * [x] Service Discovery via CoreDNS
-    * [ ] Ceph storage via Rook
+    * [x] Ceph storage via Rook
+        * [x] Block storage for pods
+        * [ ] Shared fielsystem
+        * [ ] Object storage with [LDAP for authentication](https://docs.ceph.com/docs/master/radosgw/ldap-auth/); and
+        * [ ] Integrated with [Vault for secure key management](https://docs.ceph.com/docs/master/radosgw/vault/)
+        * [ ] With dashboard
+            * [ ] Enabled [object gateway management](https://docs.ceph.com/docs/master/mgr/dashboard/#enabling-the-object-gateway-management-frontend)
+            * [ ] via [SSO](https://docs.ceph.com/docs/master/mgr/dashboard/#enabling-single-sign-on-sso)
+        * [ ] Monitoring with Prometheus and Grafana
     * [ ] Cloudflare integration with `external-dns`
     * [ ] TLS certificates with Cert-Manager
         * [ ] Self-signed Root CA for internal services
@@ -19,7 +27,6 @@ This repository contains docker details, notes and general setup musings around 
         * [ ] KeyCloak/Dex as identity provider
             * [ ] Multi-factor auth for key admin users
         * [ ] OIDC Forward Auth for additional fine grained RBAC
-    * [ ] Monitoring with Prometheus and Grafana
 * [ ] Secure VPN access for users
     * [ ] Integrated with PKI
     * [ ] Integrated with IDAM, Keycloak+OpenLDAP
