@@ -6,8 +6,7 @@ Connect to the toolbox
 kubectl -n rook-ceph exec -it $(kubectl -n rook-ceph get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}') bash
 ```
 
-You can then run commands such as `
-ceph device ls
+You can then run commands such as `ceph device ls`
 
 # Normal
 If you don't have any devices or OSDs created check what's happening during startup. See [docs](https://rook.io/docs/rook/v1.1/ceph-common-issues.html#osd-pods-are-not-created-on-my-devices)

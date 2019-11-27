@@ -8,9 +8,9 @@ This repository contains docker details, notes and general setup musings around 
     * [ ] Basic hardening
 * [ ] Configuring kubernetes
     * [x] Networking and Network Policy via Canal
-    * [ ] Service Discovery via CoreDNS
-    * [ ] Cloudflare integration with `external-dns`
+    * [x] Service Discovery via CoreDNS
     * [ ] Ceph storage via Rook
+    * [ ] Cloudflare integration with `external-dns`
     * [ ] TLS certificates with Cert-Manager
         * [ ] Self-signed Root CA for internal services
         * [ ] Let's Encrypt for external services
