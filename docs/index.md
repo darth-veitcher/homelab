@@ -19,6 +19,7 @@ This repository contains docker details, notes and general setup musings around 
         * [ ] KeyCloak/Dex as identity provider
             * [ ] Multi-factor auth for key admin users
         * [ ] OIDC Forward Auth for additional fine grained RBAC
+    * [ ] Monitoring with Prometheus and Grafana
 * [ ] Secure VPN access for users
     * [ ] Integrated with PKI
     * [ ] Integrated with IDAM, Keycloak+OpenLDAP
