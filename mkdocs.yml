@@ -25,6 +25,10 @@ nav:
     - 'Kubernetes': '99.snippets/kubernetes.md'
     - 'Ceph': '99.snippets/ceph.md'
 
+# GitHub Pages
+docs_dir: docs_src
+site_dir: docs
+
 # Use the Material theme config
 # https://squidfunk.github.io/mkdocs-material/getting-started/
 theme:
