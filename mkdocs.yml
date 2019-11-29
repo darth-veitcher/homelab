@@ -27,6 +27,7 @@ nav:
         - 'Block': '01.infrastructure/03.storage/0200.block.md'
         - 'Filesystem': '01.infrastructure/03.storage/0201.filesystem.md'
         - 'Object': '01.infrastructure/03.storage/0202.object.md'
+    - 'Monitoring with Prometheus and Grafana': '01.infrastructure/04.monitoring/00.monitoring.with.prometheus.and.grafana.md'
   - 'Snippets':
     - 'Storage': '99.snippets/storage.disks.md'
     - 'Kubernetes': '99.snippets/kubernetes.md'

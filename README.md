@@ -11,13 +11,14 @@ This repository contains docker details, notes and general setup musings around 
     * [x] Service Discovery via CoreDNS
     * [x] Ceph storage via Rook
         * [x] Block storage for pods
-        * [ ] Shared fielsystem
-        * [ ] Object storage with [LDAP for authentication](https://docs.ceph.com/docs/master/radosgw/ldap-auth/); and
-        * [ ] Integrated with [Vault for secure key management](https://docs.ceph.com/docs/master/radosgw/vault/)
-        * [ ] With dashboard
-            * [ ] Enabled [object gateway management](https://docs.ceph.com/docs/master/mgr/dashboard/#enabling-the-object-gateway-management-frontend)
+        * [x] Shared filesystem
+        * [x] Object storage
+            * [ ] with [LDAP for authentication](https://docs.ceph.com/docs/master/radosgw/ldap-auth/); and
+            * [ ] with [Vault for secure key management](https://docs.ceph.com/docs/master/radosgw/vault/)
+        * [x] With dashboard
+            * [x] Enabled [object gateway management](https://docs.ceph.com/docs/master/mgr/dashboard/#enabling-the-object-gateway-management-frontend)
             * [ ] via [SSO](https://docs.ceph.com/docs/master/mgr/dashboard/#enabling-single-sign-on-sso)
-        * [ ] Monitoring with Prometheus and Grafana
+        * [x] Monitoring with Prometheus and Grafana
     * [ ] Cloudflare integration with `external-dns`
     * [ ] TLS certificates with Cert-Manager
         * [ ] Self-signed Root CA for internal services
