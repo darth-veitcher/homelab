@@ -1,6 +1,17 @@
 # Darth-Veitcher's Homelab 
 This repository contains docker details, notes and general setup musings around configuring my (overkill) homelab end-to-end. This has been deliberately done **the hard way** (i.e. handcrafted from scratch) wherever possible so that I understand what's going on under the hood. I'm not a big fan of black boxes.
 
+You'll undoubtedly find quicker and easier `getting started with Kubernetes` guides elsewhere online (personally I'd recommend looking at some of the excellent posts by [Alex Ellis](https://blog.alexellis.io/raspberry-pi-homelab-with-k3sup/)) but I wanted something fully featured.
+
+This setup is opinionated and features the following:
+
+* Hybrid cloud setup with nodes both on-premise (bare metal) and cloud (dedicated servers)
+* VPN links for secure access between nodes
+* Redundant Ceph storage
+* Monitoring via Prometheus, visualisation with Grafana
+* TLS certificates via LetsEncrypt
+* Integrated Identity and Access Management (IDAM), supporting multiple protocols (incl. Oauth, OIDC and LDAP) via Keycloak
+
 ## High level requirements, roadmap and table of contents
 * [ ] Reference Architecture (appendix)
 * [x] Configuring physical nodes
