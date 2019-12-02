@@ -31,9 +31,9 @@ This setup is opinionated and features the following:
             * [ ] via [SSO](https://docs.ceph.com/docs/master/mgr/dashboard/#enabling-single-sign-on-sso)
         * [x] Monitoring with Prometheus and Grafana
     * [ ] Cloudflare integration with `external-dns`
-    * [ ] TLS certificates with Cert-Manager
+    * [x] TLS certificates with Cert-Manager
         * [ ] Self-signed Root CA for internal services
-        * [ ] Let's Encrypt for external services
+        * [x] Let's Encrypt for external services
     * [ ] Identity and Access Management with OIDC
         * [ ] OpenLDAP as directory service
         * [ ] KeyCloak/Dex as identity provider

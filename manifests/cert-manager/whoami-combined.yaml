@@ -1,0 +1,57 @@
+# file: ~/cert-manager/whoami-combined.yaml
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: whoami
+  namespace: default
+  annotations:
+    kubernete.io/ingress.class: nginx
+    cert-manager.io/issuer: "letsencrypt"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  tls:
+  - secretName: whoami-jamesveitch-dev-tls
+    hosts:
+    - whoami.jamesveitch.dev
+  rules:
+  - host: whoami.jamesveitch.dev
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: whoami
+          servicePort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: whoami
+spec:
+  selector:
+    app: whoami
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: whoami
+  labels:
+    app: whoami
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: whoami
+  template:
+    metadata:
+      labels:
+        app: whoami
+    spec:
+      containers:
+      - name: whoami
+        image: containous/whoami
+        ports:
+        - containerPort: 80

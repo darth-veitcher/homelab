@@ -3,16 +3,21 @@ apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: whoami-ingress
+  namespace: default
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    # cert-manager.io/issuer: "letsencrypt-staging"
+    kubernete.io/ingress.class: nginx
+    # nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/issuer: "letsencrypt"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    # external-dns.alpha.kubernetes.io/hostname: whoami.jamesveitch.dev
 spec:
-  #tls:
-  #- secretName: whoami-jamesveitch-dev-tls-staging
-  #  hosts:
-  #  - whoami.jamesveitch.dev
+  tls:
+  - secretName: whoami-jamesveitch-dev-tls
+    hosts:
+    - whoami.jamesveitch.dev
   rules:
-  - http:
+  - host: whoami.jamesveitch.dev
+    http:
       paths:
       - path: /
         backend:
