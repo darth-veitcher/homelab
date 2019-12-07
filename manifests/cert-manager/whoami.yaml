@@ -26,6 +26,7 @@ kind: Service
 metadata:
   name: whoami
 spec:
+  # type: LoadBalancer
   selector:
     app: whoami
   ports:
