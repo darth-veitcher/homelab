@@ -1,0 +1,51 @@
+# Container Linux Config
+# example configuration for bare metal server Dell 710 on-prem
+# 
+# modify the existing rancher user and give them my ssh public key
+ssh_authorized_keys:
+  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDZsCEU/2uFV4YpBjoOsSIY1yRta3mGdd81TyvZFGzVsXEn7BbkJXPI6I3r8vXQaRgQvr//yj/Q3whuGlcBuH8PuCAUlHg2oJIMJ+NsIW/E300nzu0j8lltDvLg4Sl1Ncag4Hy5JtjeWyoouHCUajxN8jRKqXW1pS3hZO2+UCN2t6ZNl7n01cZZviVWcoPe2tUpy2O52iWW6Wt7cgWFSBVPCmnD3p5Vwnz2d5SrSgzQ+9Qq/jrU0ZGF32wLt/c3OzHMBRLYNJviMaEZfonIjTmpqOxUQxXzO25K3/A0QHeEtBInKpNr7TUJ/U0rtpNrw2Th6wsc4pjLLM9R9U6EbH9D james@jamesveitch.com
+# hostname
+# https://rancher.com/docs/os/v1.x/en/installation/configuration/hostname/
+hostname: banks
+rancher:
+  # Enable services for kernel headers
+  services_include: 
+    kernel-headers: true
+    kernel-headers-system-docker: true
+  # Load Kernel module for wireguard
+  # https://rancher.com/docs/os/v1.x/en/installation/configuration/loading-kernel-modules/
+  # https://rancher.com/docs/os/v1.x/en/installation/configuration/kernel-modules-kernel-headers/
+  modules: [wireguard]
+  # modify docker
+  docker:
+    # Set correct docker version for Kubernetes
+    # https://rancher.com/docs/os/v1.x/en/installation/configuration/switching-docker-versions/
+    engine: docker-18.09.9
+    # and enable TLS
+    # https://rancher.com/docs/os/v1.x/en/installation/configuration/setting-up-docker-tls/
+    # tls: true
+  # Set custom port for ssh
+  # https://rancher.com/docs/os/v1.x/en/installation/configuration/ssh-keys/#sshd-port-and-ip
+  ssh:
+    port: 22
+  # network configuration
+  # https://rancher.com/docs/os/v1.x/en/installation/networking/interfaces/
+  network:
+    interfaces:
+      bond0:
+        dhcp: true
+        bond_opts:
+          downdelay: "200"
+          lacp_rate: "1"
+          miimon: "100"
+          mode: "4"
+          updelay: "200"
+          xmit_hash_policy: layer3+4
+      mac=B8:AC:6F:84:AE:10:
+        bond: bond0
+      mac=AC:6F:84:AE:12:
+        bond: bond0 
+      mac=AC:6F:84:AE:14:
+        bond: bond0 
+      mac=B8:AC:6F:84:AE:16:
+        bond: bond0

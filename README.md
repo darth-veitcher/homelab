@@ -46,3 +46,4 @@ This setup is opinionated and features the following:
 * [ ] Services Stack: Developer
     * [ ] Docker registry
     * [ ] Gitea
+    * [ ] TimeMachine backup for Apple devices
