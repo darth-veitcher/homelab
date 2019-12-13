@@ -9,6 +9,7 @@ mkdocs-material = "*"
 pymdown-extensions = "*"
 mkdocs-minify-plugin = "*"
 flake8 = "*"
+mkdocs-drawio-exporter = "*"
 
 [packages]
 
