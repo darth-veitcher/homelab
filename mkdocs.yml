@@ -20,7 +20,10 @@ nav:
         - 'Ingress (Hamilton)': '01.infrastructure/01.hosts/04.hamilton.md'
     - 'Kubernetes Configuration': 
       - 'Install Kubernetes': '01.infrastructure/02.kubernetes/00.configuring.kubernetes.md'
-      - 'Setup CNI': '01.infrastructure/02.kubernetes/01.cni.md'
+      - 'Initial Networking':
+        - 'CNI': '01.infrastructure/02.kubernetes/01.cni.md'
+        - 'Load Balancer': '01.infrastructure/02.kubernetes/02.metallb.md'
+        - 'Ingress and Service Mesh': '01.infrastructure/02.kubernetes/03.ingress.and.service.mesh.md'
     - 'CEPH Storage with Rook': 
       - 'Install the Cluster': '01.infrastructure/03.storage/00.setup.ceph.storage.with.rook.md'
       - 'Setup Dashboard': '01.infrastructure/03.storage/01.dashboard.md'

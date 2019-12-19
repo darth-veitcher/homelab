@@ -12,6 +12,14 @@ This setup is opinionated and features the following:
 * TLS certificates via LetsEncrypt
 * Integrated Identity and Access Management (IDAM), supporting multiple protocols (incl. Oauth, OIDC and LDAP) via Keycloak
 
+# Why? What problems am I solving?
+Probably the most important question before disappearing down the rabbit hole is `Why?`. From my perspective I'm looking to address a couple of specific use cases, which then drive the requirements.
+
+* **Data (Work)**: The ability to capture, store, process and analyse large volumes of data in a cost effective fashion.
+* **Home**: I want to run some services at home (e.g. Plex, DNS, Git).
+
+Ideally I'd also like to be able to access this external from the house wherever I am. In addition, with multiple bits of hardware available to me (hangover from tinkering for years) it would be good to be able to spin up/down capacity whenever needed without having to worry about the impact on services.
+
 ## High level requirements, roadmap and table of contents
 * [ ] Reference Architecture (appendix)
 * [x] Configuring physical nodes
