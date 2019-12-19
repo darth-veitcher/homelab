@@ -24,6 +24,7 @@ nav:
         - 'CNI': '01.infrastructure/02.kubernetes/01.cni.md'
         - 'Load Balancer': '01.infrastructure/02.kubernetes/02.metallb.md'
         - 'Ingress and Service Mesh': '01.infrastructure/02.kubernetes/03.ingress.and.service.mesh.md'
+    - 'TLS Certificates Management': '01.infrastructure/03.certificates/00.cert.manager.md'
     - 'CEPH Storage with Rook': 
       - 'Install the Cluster': '01.infrastructure/03.storage/00.setup.ceph.storage.with.rook.md'
       - 'Setup Dashboard': '01.infrastructure/03.storage/01.dashboard.md'
@@ -33,7 +34,6 @@ nav:
         - 'Filesystem': '01.infrastructure/03.storage/0201.filesystem.md'
         - 'Object': '01.infrastructure/03.storage/0202.object.md'
     - 'Monitoring with Prometheus and Grafana': '01.infrastructure/04.monitoring/00.monitoring.with.prometheus.and.grafana.md'
-    - 'TLS Certificates Management': '01.infrastructure/05.certificates/00.cert.manager.md'
   - 'Snippets':
     - 'Storage': '99.snippets/storage.disks.md'
     - 'Kubernetes': '99.snippets/kubernetes.md'
