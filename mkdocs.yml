@@ -34,6 +34,7 @@ nav:
         - 'Filesystem': '01.infrastructure/04.storage/0201.filesystem.md'
         - 'Object': '01.infrastructure/04.storage/0202.object.md'
     - 'Monitoring with Prometheus and Grafana': '01.infrastructure/05.monitoring/00.monitoring.with.prometheus.and.grafana.md'
+    - 'External DNS': '01.infrastructure/06.external.dns/00.external.dns.md'
   - 'Snippets':
     - 'Storage': '99.snippets/storage.disks.md'
     - 'Kubernetes': '99.snippets/kubernetes.md'
