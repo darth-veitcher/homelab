@@ -23,7 +23,7 @@ nav:
       - 'Initial Networking':
         - 'CNI': '01.infrastructure/02.kubernetes/01.cni.md'
         - 'Load Balancer': '01.infrastructure/02.kubernetes/02.metallb.md'
-        - 'Ingress and Service Mesh': '01.infrastructure/02.kubernetes/03.ingress.and.service.mesh.md'
+        - 'Ingress': '01.infrastructure/02.kubernetes/03.ingress.md'
     - 'TLS Certificates Management': '01.infrastructure/03.certificates/00.cert.manager.md'
     - 'CEPH Storage with Rook': 
       - 'Install the Cluster': '01.infrastructure/04.storage/00.setup.ceph.storage.with.rook.md'
