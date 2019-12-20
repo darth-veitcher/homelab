@@ -80,14 +80,14 @@ plugins:
   - search
   - minify:
       minify_html: true
-  # - drawio-exporter
-  #     # # Diagrams are cached to speed up site generation. The default path is
-  #     # # drawio-exporter, relative to the documentation directory.
-  #     # cache_dir: 'drawio-exporter'
-  #     # # Path to draw.io or draw.io.exe. Will be determined from the PATH
-  #     # # environment variable if not specified.
-  #     # drawio_executable: /Applications/draw.io.app/Contents/MacOS/draw.io
-  #     # # Output format (see draw.io --help | grep format)
-  #     # format: svg
-  #     # # Glob pattern for matching source files
-  #     # sources: '*.drawio'
+  - drawio-exporter:
+      # Diagrams are cached to speed up site generation. The default path is
+      # drawio-exporter, relative to the documentation directory.
+      cache_dir: 'drawio-exporter'
+      # Path to draw.io or draw.io.exe. Will be determined from the PATH
+      # environment variable if not specified.
+      drawio_executable: /Applications/draw.io.app/Contents/MacOS/draw.io
+      # Output format (see draw.io --help | grep format)
+      format: svg
+      # Glob pattern for matching source files
+      sources: '*.drawio'
