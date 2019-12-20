@@ -44,6 +44,12 @@
     
       <link rel="stylesheet" href="/assets/stylesheets/application.1b62728e.css">
       
+        <link rel="stylesheet" href="/assets/stylesheets/application-palette.a8b3c06d.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="#2196f3">
       
     
     
@@ -52,8 +58,8 @@
     
       
         <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
-        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Abel:300,400,400i,700|Hackman&display=fallback">
+        <style>body,input{font-family:"Abel","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Hackman","Courier New",Courier,monospace}</style>
       
     
     <link rel="stylesheet" href="/assets/fonts/material-icons.css">
@@ -65,7 +71,9 @@
     
   </head>
   
-    <body dir="ltr">
+    
+    
+    <body dir="ltr" data-md-color-primary="blue" data-md-color-accent="teal">
   
     <svg class="md-svg">
       <defs>
@@ -374,9 +382,28 @@
           
 
 
-  <li class="md-nav__item">
-    <a href="/01.infrastructure/02.kubernetes/00.configuring.kubernetes/" title="Kubernetes Configuration" class="md-nav__link">
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2-3" type="checkbox" id="nav-2-3">
+    
+    <label class="md-nav__link" for="nav-2-3">
       Kubernetes Configuration
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-2-3">
+        Kubernetes Configuration
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="/01.infrastructure/02.kubernetes/00.configuring.kubernetes/" title="Install Kubernetes" class="md-nav__link">
+      Install Kubernetes
     </a>
   </li>
 
@@ -388,13 +415,90 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2-4" type="checkbox" id="nav-2-4">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2-3-2" type="checkbox" id="nav-2-3-2">
     
-    <label class="md-nav__link" for="nav-2-4">
+    <label class="md-nav__link" for="nav-2-3-2">
+      Initial Networking
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
+      <label class="md-nav__title" for="nav-2-3-2">
+        Initial Networking
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="/01.infrastructure/02.kubernetes/01.cni/" title="CNI" class="md-nav__link">
+      CNI
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="/01.infrastructure/02.kubernetes/02.metallb/" title="Load Balancer" class="md-nav__link">
+      Load Balancer
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="/01.infrastructure/02.kubernetes/03.ingress.and.service.mesh.md" title="Ingress and Service Mesh" class="md-nav__link">
+      Ingress and Service Mesh
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="/01.infrastructure/03.certificates/00.cert.manager/" title="TLS Certificates Management" class="md-nav__link">
+      TLS Certificates Management
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2-5" type="checkbox" id="nav-2-5">
+    
+    <label class="md-nav__link" for="nav-2-5">
       CEPH Storage with Rook
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
-      <label class="md-nav__title" for="nav-2-4">
+      <label class="md-nav__title" for="nav-2-5">
         CEPH Storage with Rook
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -406,7 +510,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/01.infrastructure/03.storage/00.setup.ceph.storage.with.rook/" title="Install the Cluster" class="md-nav__link">
+    <a href="/01.infrastructure/04.storage/00.setup.ceph.storage.with.rook/" title="Install the Cluster" class="md-nav__link">
       Install the Cluster
     </a>
   </li>
@@ -418,7 +522,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/01.infrastructure/03.storage/01.dashboard/" title="Setup Dashboard" class="md-nav__link">
+    <a href="/01.infrastructure/04.storage/01.dashboard/" title="Setup Dashboard" class="md-nav__link">
       Setup Dashboard
     </a>
   </li>
@@ -431,13 +535,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2-4-3" type="checkbox" id="nav-2-4-3">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2-5-3" type="checkbox" id="nav-2-5-3">
     
-    <label class="md-nav__link" for="nav-2-4-3">
+    <label class="md-nav__link" for="nav-2-5-3">
       Storage Configuration
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
-      <label class="md-nav__title" for="nav-2-4-3">
+      <label class="md-nav__title" for="nav-2-5-3">
         Storage Configuration
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -449,7 +553,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/01.infrastructure/03.storage/02.storage/" title="Storage" class="md-nav__link">
+    <a href="/01.infrastructure/04.storage/02.storage/" title="Storage" class="md-nav__link">
       Storage
     </a>
   </li>
@@ -461,7 +565,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/01.infrastructure/03.storage/0200.block/" title="Block" class="md-nav__link">
+    <a href="/01.infrastructure/04.storage/0200.block/" title="Block" class="md-nav__link">
       Block
     </a>
   </li>
@@ -473,7 +577,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/01.infrastructure/03.storage/0201.filesystem/" title="Filesystem" class="md-nav__link">
+    <a href="/01.infrastructure/04.storage/0201.filesystem/" title="Filesystem" class="md-nav__link">
       Filesystem
     </a>
   </li>
@@ -485,7 +589,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/01.infrastructure/03.storage/0202.object/" title="Object" class="md-nav__link">
+    <a href="/01.infrastructure/04.storage/0202.object/" title="Object" class="md-nav__link">
       Object
     </a>
   </li>
@@ -506,9 +610,28 @@
           
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2-6" type="checkbox" id="nav-2-6">
+    
+    <label class="md-nav__link" for="nav-2-6">
+      Monitoring
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-2-6">
+        Monitoring
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
-    <a href="/01.infrastructure/04.monitoring/00.monitoring.with.prometheus.and.grafana/" title="Monitoring with Prometheus and Grafana" class="md-nav__link">
-      Monitoring with Prometheus and Grafana
+    <a href="/01.infrastructure/05.monitoring/00.monitoring.with.prometheus.and.grafana/" title="Prometheus and Grafana" class="md-nav__link">
+      Prometheus and Grafana
     </a>
   </li>
 
@@ -519,9 +642,14 @@
 
 
   <li class="md-nav__item">
-    <a href="/01.infrastructure/05.certificates/00.cert.manager/" title="TLS Certificates Management" class="md-nav__link">
-      TLS Certificates Management
+    <a href="/01.infrastructure/05.monitoring/01.kubernetes.dashboard/" title="Kubernetes Dashboard" class="md-nav__link">
+      Kubernetes Dashboard
     </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
         
@@ -619,12 +747,13 @@
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
       <div class="md-footer-copyright">
-        
-        powered by
-        <a href="https://www.mkdocs.org">MkDocs</a>
-        and
-        <a href="https://squidfunk.github.io/mkdocs-material/">
-          Material for MkDocs</a>
+        <div class="md-footer-copyright__highlight" id="copy">
+            <!-- &copy Darth Veitcher 2019-&date -->
+        </div>
+        <script type="text/javascript">
+            let theDate=new Date();
+            copy.innerHTML = "&copy Darth Veitcher "+theDate.getFullYear();
+        </script>
       </div>
       
   <div class="md-footer-social">
