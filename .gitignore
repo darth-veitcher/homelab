@@ -102,6 +102,7 @@ ENV/
 
 # Mkdocs
 site/
+drawio-exporter
 
 # Notes
 notes/
