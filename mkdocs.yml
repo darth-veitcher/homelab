@@ -49,6 +49,12 @@ theme:
   name: 'material'
   logo:
     icon: 'vpn_lock'
+  palette:
+    primary: 'blue'  # indigo
+    accent: 'teal'  # indigo
+  font:
+    text: 'Abel'  # Ubuntu
+    code: 'Hackman'  # Ubuntu Mono
 
 # Customisation
 extra:
