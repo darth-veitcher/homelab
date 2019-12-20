@@ -14,6 +14,7 @@ If you don't have any devices or OSDs created check what's happening during star
 ```bash
 # get the prepare pods in the cluster
 $ kubectl -n rook-ceph get pod -l app=rook-ceph-osd-prepare
+
 NAME                                   READY     STATUS      RESTARTS   AGE
 rook-ceph-osd-prepare-node1-fvmrp      0/1       Completed   0          18m
 rook-ceph-osd-prepare-node2-w9xv9      0/1       Completed   0          22m
