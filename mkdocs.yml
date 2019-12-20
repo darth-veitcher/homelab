@@ -47,6 +47,7 @@ site_dir: docs
 # https://squidfunk.github.io/mkdocs-material/getting-started/
 theme:
   name: 'material'
+  custom_dir: 'docs_src/theme'
   logo:
     icon: 'vpn_lock'
   palette:
