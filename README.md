@@ -43,10 +43,10 @@ Ideally I'd also like to be able to access this external from the house wherever
     * [x] TLS certificates with Cert-Manager
         * [ ] Self-signed Root CA for internal services
         * [x] Let's Encrypt for external services
-    * [ ] Identity and Access Management with OIDC
-        * [ ] OpenLDAP as directory service
-        * [ ] KeyCloak/Dex as identity provider
-            * [ ] Multi-factor auth for key admin users
+    * [x] Identity and Access Management with OIDC
+        * [x] OpenLDAP as directory service
+        * [x] KeyCloak/Dex as identity provider
+            * [x] Multi-factor auth for key admin users
         * [ ] OIDC Forward Auth for additional fine grained RBAC
 * [ ] Secure VPN access for users
     * [ ] Integrated with PKI
