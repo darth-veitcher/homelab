@@ -36,6 +36,10 @@ nav:
     - 'Monitoring':
         - 'Prometheus and Grafana': '01.infrastructure/05.monitoring/00.monitoring.with.prometheus.and.grafana.md'
         - 'Kubernetes Dashboard': '01.infrastructure/05.monitoring/01.kubernetes.dashboard.md'
+  - 'Identity and Access Management (IDAM)':
+    - 'IDAM Overview': '02.idam/00.idam.md'
+    - 'OpenLDAP': '02.idam/01.openldap.md'
+    - 'Keycloak': '02.idam/02.keycloak.md'
   - 'Snippets':
     - 'Storage': '99.snippets/storage.disks.md'
     - 'Kubernetes': '99.snippets/kubernetes.md'
