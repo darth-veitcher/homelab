@@ -1,0 +1,204 @@
+# file: ~/idam/ldap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ldap-config
+  namespace: idam
+  labels:
+    app: ldap
+    tier: backend
+data:
+  LDAP_ORGANISATION: James Veitch
+  LDAP_DOMAIN: jamesveitch.dev
+  LDAP_ADMIN_PASSWORD: admin
+  LDAP_CONFIG_PASSWORD: config
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ldap-data-pv-claim
+  namespace: idam
+  labels:
+    app: ldap
+    tier: backend
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ldap-config-pv-claim
+  namespace: idam
+  labels:
+    app: ldap
+    tier: backend
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ldap-certs-pv-claim
+  namespace: idam
+  labels:
+    app: ldap
+    tier: backend
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ldap
+  namespace: idam
+  labels:
+    app: ldap
+    tier: backend
+spec:
+  selector:
+    app: ldap
+    tier: backend
+  ports:
+    - name: ldap
+      protocol: TCP
+      port: 389
+      targetPort: 389
+    - name: ldaps-tcp
+      protocol: TCP
+      port: 636
+      targetPort: 636
+    - name: ldaps
+      protocol: UDP
+      port: 636
+      targetPort: 636
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ldap-deployment
+  namespace: idam
+  labels:
+    app: ldap
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ldap
+      tier: backend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: ldap
+        tier: backend
+    spec:
+      containers:
+      - name: ldap
+        image: osixia/openldap
+        envFrom:
+        - configMapRef:
+            name: ldap-config
+        ports:
+        - containerPort: 389
+          name: ldap
+        - containerPort: 636
+          name: ldaps
+        volumeMounts:
+        - name: ldap-data
+          mountPath: /var/lib/ldap
+        - name: ldap-config
+          mountPath: /etc/ldap/slapd.d
+        - name: ldap-certs
+          mountPath: /container/service/slapd/assets/certs
+      volumes:
+      - name: ldap-data
+        persistentVolumeClaim:
+          claimName: ldap-data-pv-claim
+      - name: ldap-config
+        persistentVolumeClaim:
+          claimName: ldap-config-pv-claim
+      - name: ldap-certs
+        persistentVolumeClaim:
+          claimName: ldap-certs-pv-claim
+```
+
+# Admin (optional)
+
+```yaml
+# file: ~/idam/ldap-admin.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ldapadmin-config
+  namespace: idam
+  labels:
+    app: ldap
+    tier: frontend
+data:
+  PHPLDAPADMIN_LDAP_HOSTS: "ldap.idam"
+  PHPLDAPADMIN_HTTPS: "false"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ldapadmin
+  namespace: idam
+  labels:
+    app: ldap
+    tier: frontend
+spec:
+  type: LoadBalancer
+  selector:
+    app: ldap
+    tier: frontend
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ldapadmin-deployment
+  namespace: idam
+  labels:
+    app: ldap
+    tier: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ldap
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: ldap
+        tier: frontend
+    spec:
+      containers:
+      - name: ldapadmin
+        image: osixia/phpldapadmin
+        envFrom:
+        - configMapRef:
+            name: ldapadmin-config
+        ports:
+        - containerPort: 80
+          name: http
