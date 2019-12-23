@@ -1,0 +1,6 @@
+# Entry 1: cn=auth-admins,ou=RealmRoles,ou=Groups,dc=jamesveitch,dc=dev
+dn: cn=auth-admins,ou=RealmRoles,ou=Groups,dc=jamesveitch,dc=dev
+cn: auth-admins
+member: uid=jamesveitch,ou=People,dc=jamesveitch,dc=dev
+objectclass: groupOfNames
+objectclass: top

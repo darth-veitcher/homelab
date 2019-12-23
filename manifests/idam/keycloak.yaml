@@ -1,9 +1,9 @@
-# file: ~/idam/keycloak.yaml
+# file: ~/auth/keycloak.yaml
 apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
 metadata:
   name: keycloak
-  namespace: idam
+  namespace: auth
 spec:
   secretName: keycloak-certs
   duration: 2160h # 90d
@@ -29,7 +29,7 @@ apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: keycloak-external-ingress
-  namespace: idam
+  namespace: auth
   labels:
     app: keycloak
     tier: frontend
@@ -39,9 +39,9 @@ metadata:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
   tls:
-   - hosts:
-     - auth.jamesveitch.dev
-     secretName: keycloak-certs
+  - hosts:
+    - auth.jamesveitch.dev
+    secretName: keycloak-certs
   rules:
   - host: auth.jamesveitch.dev
     http:
@@ -55,7 +55,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: keycloak
-  namespace: idam
+  namespace: auth
   labels:
     app: keycloak
     tier: frontend
@@ -73,16 +73,12 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: keycloak-config
-  namespace: idam
+  namespace: auth
   labels:
     app: keycloak
     tier: frontend
 data:
-  DB_ADDR: keycloak-db.idam
-  DB_USER: postgres
-  DB_PASSWORD: postgres
-  KEYCLOAK_USER: admin
-  KEYCLOAK_PASSWORD: password
+  DB_ADDR: keycloak-db.auth
   # This is required to run keycloak behind a service,ingress etc		
   PROXY_ADDRESS_FORWARDING: "true"
 ---
@@ -90,7 +86,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: keycloak-deployment
-  namespace: idam
+  namespace: auth
   labels:
     app: keycloak
     tier: frontend
@@ -112,6 +108,10 @@ spec:
       - name: keycloak
         image: jboss/keycloak
         envFrom:
+        - secretRef:
+            name: keycloak-db-creds
+        - secretRef:
+            name: keycloak-user-creds
         - configMapRef:
             name: keycloak-config
         ports:
@@ -122,13 +122,11 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: keycloak-db-config
-  namespace: idam
+  namespace: auth
   labels:
     app: keycloak
     tier: postgres
 data:
-  POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: postgres
   POSTGRES_DB: keycloak
   PGDATA: /var/lib/postgresql/data/pgdata
 ---
@@ -136,7 +134,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: keycloak-db-data-pv-claim
-  namespace: idam
+  namespace: auth
   labels:
     app: keycloak
     tier: postgres
@@ -151,7 +149,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: keycloak-db-config-pv-claim
-  namespace: idam
+  namespace: auth
   labels:
     app: keycloak
     tier: postgres
@@ -166,7 +164,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: keycloak-db
-  namespace: idam
+  namespace: auth
   labels:
     app: keycloak
     tier: postgres
@@ -184,7 +182,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: keycloak-db-deployment
-  namespace: idam
+  namespace: auth
   labels:
     app: keycloak
     tier: postgres
@@ -205,6 +203,18 @@ spec:
       containers:
       - name: keycloak-db
         image: postgres:alpine
+        env:
+          # Secrets
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: keycloak-db-creds
+                key: DB_USER
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: keycloak-db-creds
+                key: DB_PASSWORD
         envFrom:
         - configMapRef:
             name: keycloak-db-config
