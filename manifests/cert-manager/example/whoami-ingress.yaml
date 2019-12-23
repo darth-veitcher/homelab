@@ -1,15 +1,13 @@
-# file: ~/cert-manager/whoami-ingress.yaml
+# file: ~/cert-manager/example/whoami-ingress.yaml
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: whoami
-  namespace: default
   annotations:
     kubernete.io/ingress.class: nginx
-    # nginx.ingress.kubernetes.io/rewrite-target: /
-    cert-manager.io/issuer: "letsencrypt"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/issuer: "letsencrypt-staging"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    # external-dns.alpha.kubernetes.io/hostname: whoami.jamesveitch.dev
 spec:
   tls:
   - secretName: whoami-jamesveitch-dev-tls
@@ -20,6 +18,13 @@ spec:
     http:
       paths:
       - path: /
+        backend:
+          serviceName: whoami
+          servicePort: 80
+  - host: jamesveitch.dev
+    http:
+      paths:
+      - path: /whoami
         backend:
           serviceName: whoami
           servicePort: 80

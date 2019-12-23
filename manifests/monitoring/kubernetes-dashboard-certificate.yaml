@@ -1,19 +1,21 @@
-# file: ~/cert-manager/whoami-certificate-staging.yaml
+# file: ~/monitoring/kubernetes-dashboard-certificate.yaml
 apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
 metadata:
-  name: whoami
-  namespace: default
+  name: dashboard
+  namespace: monitoring
 spec:
   # Secret names are always required.
-  secretName: whoami-jamesveitch-dev-tls-staging
+  # We should use the name in the docs 
+  # https://github.com/kubernetes/dashboard/blob/master/docs/user/installation.md#recommended-setup
+  secretName: kubernetes-dashboard-certs
   duration: 2160h # 90d
   renewBefore: 360h # 15d
   organization:
   - jamesveitch
   # The use of the common name field has been deprecated since 2000 and is
   # discouraged from being used.
-  commonName: whoami.jamesveitch.dev
+  commonName: dashboard.jamesveitch.dev
   isCA: false
   keySize: 2048
   keyAlgorithm: rsa
@@ -23,18 +25,17 @@ spec:
     - client auth
   # At least one of a DNS Name, USI SAN, or IP address is required.
   dnsNames:
-  - whoami.jamesveitch.dev
-  - www.whoami.jamesveitch.dev
+  - dashboard.jamesveitch.dev
 #   uriSANs:
 #   - spiffe://cluster.local/ns/sandbox/sa/example
 #   ipAddresses:
 #   - 192.168.0.5
   # Issuer references are always required.
   issuerRef:
-    name: letsencrypt-staging
+    name: letsencrypt
     # We can reference ClusterIssuers by changing the kind here.
     # The default value is Issuer (i.e. a locally namespaced Issuer)
-    kind: Issuer
+    kind: ClusterIssuer
     # This is optional since cert-manager will default to this value however
     # if you are using an external issuer, change this to that issuer group.
     group: cert-manager.io
