@@ -126,7 +126,7 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: ldap-user-creds
-                key: password
+                key: LDAP_ADMIN_PASSWORD
           - name: LDAP_CONFIG_PASSWORD
             valueFrom:
               secretKeyRef:

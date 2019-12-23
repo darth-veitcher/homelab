@@ -1,0 +1,65 @@
+# Root
+dn: dc=jamesveitch,dc=dev
+objectclass: top
+objectclass: dcObject
+objectclass: organization
+o: James Veitch
+dc: jamesveitch
+
+# OUs
+dn: ou=People,dc=jamesveitch,dc=dev
+objectclass: top
+objectclass: organizationalUnit
+ou: People
+
+dn: ou=RealmRoles,dc=jamesveitch,dc=dev
+objectclass: top
+objectclass: organizationalUnit
+ou: RealmRoles
+
+dn: ou=KubernetesRoles,dc=jamesveitch,dc=dev
+objectclass: top
+objectclass: organizationalUnit
+ou: KubernetesRoles
+
+dn: ou=UnixGroups,dc=jamesveitch,dc=dev
+objectclass: top
+objectclass: organizationalUnit
+ou: UnixGroups
+
+# People
+dn: uid=jamesveitch,ou=People,dc=jamesveitch,dc=dev
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+uid: jamesveitch
+cn: James
+sn: Veitch
+userPassword: password
+
+# Realm Mapped Groups
+dn: cn=ldap-user,ou=RealmRoles,dc=jamesveitch,dc=dev
+objectclass: top
+objectclass: groupOfNames
+cn: ldap-user
+member: uid=jamesveitch,ou=People,dc=jamesveitch,dc=dev
+
+dn: cn=ldap-admin,ou=RealmRoles,dc=jamesveitch,dc=dev
+objectclass: top
+objectclass: groupOfNames
+cn: ldap-admin
+member: uid=jamesveitch,ou=People,dc=jamesveitch,dc=dev
+
+dn: cn=realm-admin,ou=RealmRoles,dc=jamesveitch,dc=dev
+objectclass: top
+objectclass: groupOfNames
+cn: realm-admin
+member: uid=jamesveitch,ou=People,dc=jamesveitch,dc=dev
+
+# Groups
+dn: cn=cluster-admin,ou=KubernetesRoles,dc=jamesveitch,dc=dev
+objectclass: top
+objectclass: groupOfNames
+cn: cluster-admin
+member: uid=jamesveitch,ou=People,dc=jamesveitch,dc=dev
