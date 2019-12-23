@@ -23,8 +23,6 @@ metadata:
 data:
   LDAP_ORGANISATION: James Veitch
   LDAP_DOMAIN: jamesveitch.dev
-  LDAP_ADMIN_PASSWORD: admin
-  LDAP_CONFIG_PASSWORD: config
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -123,6 +121,17 @@ spec:
       - name: ldap
         image: osixia/openldap
         args: ["--copy-service"]
+        env:
+          - name: LDAP_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: ldap-user-creds
+                key: password
+          - name: LDAP_CONFIG_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: ldap-user-creds
+                key: LDAP_CONFIG_PASSWORD
         envFrom:
         - configMapRef:
             name: ldap-config
