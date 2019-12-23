@@ -1,4 +1,4 @@
-# file: ~/cert-manager/whoami.yaml
+# file: ~/cert-manager/example/whoami.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -26,7 +26,6 @@ kind: Service
 metadata:
   name: whoami
 spec:
-  # type: LoadBalancer
   selector:
     app: whoami
   ports:
