@@ -1,4 +1,22 @@
 # file: ~/auth/ldap.yaml
+# Deploys an OpenLDAP and associated Admin containers
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: auth
+---
+# SECRETS
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ldap-user-creds
+  namespace: auth
+type: Opaque
+data:
+  LDAP_ADMIN_PASSWORD: YWRtaW4=
+  LDAP_CONFIG_PASSWORD: Y29uZmln
+---
+# LDAP
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -167,3 +185,68 @@ spec:
           name: memberof-config
       - name: container-run
         emptyDir: {}
+---
+# LDAP Admin
+# file: ~/auth/ldap-admin.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ldapadmin-config
+  namespace: auth
+  labels:
+    app: ldap
+    tier: frontend
+data:
+  PHPLDAPADMIN_LDAP_HOSTS: "ldap.auth"
+  PHPLDAPADMIN_HTTPS: "false"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ldapadmin
+  namespace: auth
+  labels:
+    app: ldap
+    tier: frontend
+spec:
+  type: LoadBalancer
+  selector:
+    app: ldap
+    tier: frontend
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ldapadmin-deployment
+  namespace: auth
+  labels:
+    app: ldap
+    tier: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ldap
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: ldap
+        tier: frontend
+    spec:
+      containers:
+      - name: ldapadmin
+        image: osixia/phpldapadmin
+        envFrom:
+        - configMapRef:
+            name: ldapadmin-config
+        ports:
+        - containerPort: 80
+          name: http

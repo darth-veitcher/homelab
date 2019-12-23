@@ -22,11 +22,6 @@ objectclass: top
 objectclass: organizationalUnit
 ou: KubernetesRoles
 
-dn: ou=UnixGroups,dc=jamesveitch,dc=dev
-objectclass: top
-objectclass: organizationalUnit
-ou: UnixGroups
-
 # People
 dn: uid=jamesveitch,ou=People,dc=jamesveitch,dc=dev
 objectclass: top
@@ -36,9 +31,10 @@ objectclass: inetOrgPerson
 uid: jamesveitch
 cn: James
 sn: Veitch
-userPassword: password
+userPassword: {CRYPT}$6$VnaZp1/J$Mqriua0dwao2Zm5aKNoIZUyA3d/BJ1vPRkGqi8KPWEZrFr2HAiZFurnLZpQtw4lJfcspYzFh0d3HVWCsdE7Q..
 
 # Realm Mapped Groups
+# (add these as a special mapper and keycloak auto-identifies)
 dn: cn=ldap-user,ou=RealmRoles,dc=jamesveitch,dc=dev
 objectclass: top
 objectclass: groupOfNames
@@ -58,6 +54,7 @@ cn: realm-admin
 member: uid=jamesveitch,ou=People,dc=jamesveitch,dc=dev
 
 # Groups
+# (standard groups fulled through as ldap-group-mapper)
 dn: cn=cluster-admin,ou=KubernetesRoles,dc=jamesveitch,dc=dev
 objectclass: top
 objectclass: groupOfNames
