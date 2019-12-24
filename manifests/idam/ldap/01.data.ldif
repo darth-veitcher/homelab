@@ -12,12 +12,17 @@ objectclass: top
 objectclass: organizationalUnit
 ou: People
 
-dn: ou=RealmRoles,dc=jamesveitch,dc=dev
+dn: ou=Groups,dc=jamesveitch,dc=dev
+objectclass: top
+objectclass: organizationalUnit
+ou: Groups
+
+dn: ou=RealmRoles,ou=Groups,dc=jamesveitch,dc=dev
 objectclass: top
 objectclass: organizationalUnit
 ou: RealmRoles
 
-dn: ou=KubernetesRoles,dc=jamesveitch,dc=dev
+dn: ou=KubernetesRoles,ou=Groups,dc=jamesveitch,dc=dev
 objectclass: top
 objectclass: organizationalUnit
 ou: KubernetesRoles
@@ -35,19 +40,19 @@ userPassword: {CRYPT}$6$VnaZp1/J$Mqriua0dwao2Zm5aKNoIZUyA3d/BJ1vPRkGqi8KPWEZrFr2
 
 # Realm Mapped Groups
 # (add these as a special mapper and keycloak auto-identifies)
-dn: cn=ldap-user,ou=RealmRoles,dc=jamesveitch,dc=dev
+dn: cn=ldap-user,ou=RealmRoles,ou=Groups,dc=jamesveitch,dc=dev
 objectclass: top
 objectclass: groupOfNames
 cn: ldap-user
 member: uid=jamesveitch,ou=People,dc=jamesveitch,dc=dev
 
-dn: cn=ldap-admin,ou=RealmRoles,dc=jamesveitch,dc=dev
+dn: cn=ldap-admin,ou=RealmRoles,ou=Groups,dc=jamesveitch,dc=dev
 objectclass: top
 objectclass: groupOfNames
 cn: ldap-admin
 member: uid=jamesveitch,ou=People,dc=jamesveitch,dc=dev
 
-dn: cn=realm-admin,ou=RealmRoles,dc=jamesveitch,dc=dev
+dn: cn=realm-admin,ou=RealmRoles,ou=Groups,dc=jamesveitch,dc=dev
 objectclass: top
 objectclass: groupOfNames
 cn: realm-admin
@@ -55,7 +60,7 @@ member: uid=jamesveitch,ou=People,dc=jamesveitch,dc=dev
 
 # Groups
 # (standard groups fulled through as ldap-group-mapper)
-dn: cn=cluster-admin,ou=KubernetesRoles,dc=jamesveitch,dc=dev
+dn: cn=cluster-admin,ou=KubernetesRoles,ou=Groups,dc=jamesveitch,dc=dev
 objectclass: top
 objectclass: groupOfNames
 cn: cluster-admin
