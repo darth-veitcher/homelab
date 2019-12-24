@@ -1,4 +1,32 @@
 # file: ~/auth/keycloak.yaml
+# Deploys a Keycloak and associated Postgres containers
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: auth
+---
+# SECRETS
+apiVersion: v1
+kind: Secret
+metadata:
+  name: keycloak-db-creds
+  namespace: auth
+type: Opaque
+data:
+  DB_USER: cG9zdGdyZXM=
+  DB_PASSWORD: YWRtaW4=
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: keycloak-user-creds
+  namespace: auth
+type: Opaque
+data:
+  KEYCLOAK_USER: YWRtaW4=
+  KEYCLOAK_PASSWORD: cGFzc3dvcmQ=
+---
+# KEYCLOAK
 apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
 metadata:
