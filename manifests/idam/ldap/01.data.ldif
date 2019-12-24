@@ -11,21 +11,25 @@ dn: ou=People,dc=jamesveitch,dc=dev
 objectclass: top
 objectclass: organizationalUnit
 ou: People
+description: LDAP tree where users are
 
 dn: ou=Groups,dc=jamesveitch,dc=dev
 objectclass: top
 objectclass: organizationalUnit
 ou: Groups
+description: LDAP tree for Groups that users belong to
 
 dn: ou=RealmRoles,ou=Groups,dc=jamesveitch,dc=dev
 objectclass: top
 objectclass: organizationalUnit
 ou: RealmRoles
+description: Keycloak roles that users have
 
 dn: ou=KubernetesRoles,ou=Groups,dc=jamesveitch,dc=dev
 objectclass: top
 objectclass: organizationalUnit
 ou: KubernetesRoles
+description: Kubernetes roles that users have
 
 # People
 dn: uid=jamesveitch,ou=People,dc=jamesveitch,dc=dev
@@ -45,18 +49,21 @@ objectclass: top
 objectclass: groupOfNames
 cn: ldap-user
 member: uid=jamesveitch,ou=People,dc=jamesveitch,dc=dev
+description: Standard group for all ldap users. Sits inside `RealmRoles` OU and implemented in Keycloak as a `role-ldap-mapper`.
 
 dn: cn=ldap-admin,ou=RealmRoles,ou=Groups,dc=jamesveitch,dc=dev
 objectclass: top
 objectclass: groupOfNames
 cn: ldap-admin
 member: uid=jamesveitch,ou=People,dc=jamesveitch,dc=dev
+description: Holds general administrators for the domain. Sits inside `RealmRoles` OU and implemented in Keycloak as a `role-ldap-mapper`.
 
 dn: cn=realm-admin,ou=RealmRoles,ou=Groups,dc=jamesveitch,dc=dev
 objectclass: top
 objectclass: groupOfNames
 cn: realm-admin
 member: uid=jamesveitch,ou=People,dc=jamesveitch,dc=dev
+description: Admin for Keycloak and LDAP. Sits inside `RealmRoles` OU and implemented in Keycloak as a `role-ldap-mapper`.
 
 # Groups
 # (standard groups fulled through as ldap-group-mapper)
@@ -65,3 +72,4 @@ objectclass: top
 objectclass: groupOfNames
 cn: cluster-admin
 member: uid=jamesveitch,ou=People,dc=jamesveitch,dc=dev
+description: Admin for the Kubernetes Cluster. Sits inside `KubernetesRoles` OU.
