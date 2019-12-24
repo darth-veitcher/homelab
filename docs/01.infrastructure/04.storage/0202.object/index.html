@@ -5,7 +5,7 @@ wget https://raw.githubusercontent.com/rook/rook/release-1.1/cluster/examples/ku
 <span class=c1># - failureDomain: osd  # we don&#39;t want it to require multiple nodes</span>
 sed -i.bak <span class=s1>&#39;s/size: 3/size: 1/g&#39;</span> object-ec.yaml<span class=p>;</span> <span class=se>\</span>
 sed -i.bak <span class=s1>&#39;s/failureDomain: host/failureDomain: osd/g&#39;</span> object-ec.yaml<span class=p>;</span> <span class=se>\</span>
-kubectl create -f ~/rook/storage/object-ec.yaml
+kubectl create -f ~/rook/storage/object/object-ec.yaml
 </pre></div> <p>Check that the object store is configured and a rgw pod has started. <div class=highlight><pre><span></span>$ kubectl -n rook-ceph get pod -l <span class=nv>app</span><span class=o>=</span>rook-ceph-rgw
 NAME                                        READY   STATUS    RESTARTS   AGE
 rook-ceph-rgw-my-store-a-86d4f98658-tfrj9   <span class=m>1</span>/1     Running   <span class=m>0</span>          27s
@@ -71,8 +71,8 @@ ceph dashboard set-rgw-api-port <span class=m>80</span>
 wget https://raw.githubusercontent.com/rook/rook/release-1.1/cluster/examples/kubernetes/ceph/storageclass-bucket-delete.yaml<span class=p>;</span> <span class=se>\</span>
 wget https://raw.githubusercontent.com/rook/rook/release-1.1/cluster/examples/kubernetes/ceph/object-bucket-claim-delete.yaml
 
-kubectl create -f ~/rook/storage/storageclass-bucket-delete.yaml<span class=p>;</span> <span class=se>\</span>
-kubectl create -f ~/rook/storage/object-bucket-claim-delete.yaml
+kubectl create -f ~/rook/storage/object/storageclass-bucket-delete.yaml<span class=p>;</span> <span class=se>\</span>
+kubectl create -f ~/rook/storage/object/object-bucket-claim-delete.yaml
 </pre></div></p> <p>We should now see something like this when navigating on the dashboard to <code>Object Gateway</code> &gt;&gt; <code>Buckets</code></p> <p><img alt=Bucket src="../img/Screenshot 2019-11-28 at 12.57.14.png"></p> <h3 id=enable-external-access>Enable external access</h3> <p>Much like the Ceph Dashboard we want to expose the bucket to services that potentially live outside of the cluster. As with the dashboard we can either use a <code>NodePort</code> or <code>Ingress</code> to do this.</p> <h4 id=nodeport>NodePort</h4> <p>We'll create a new service for external access.</p> <div class=highlight><pre><span></span><span class=nb>cd</span> ~/rook/storage
 wget https://raw.githubusercontent.com/rook/rook/release-1.1/cluster/examples/kubernetes/ceph/rgw-external.yaml
 kubectl create -f rgw-external.yaml
@@ -118,7 +118,7 @@ Hello Rook
 $ md5sum /tmp/rookObj*
 dd2f8a37e3bd769458faef03c0e4610d  /tmp/rookObj
 dd2f8a37e3bd769458faef03c0e4610d  /tmp/rookObj-download
-</pre></div></p> <h4 id=ingress>Ingress</h4> <p>As with the dasboard we'll configure this to have a valid SSL certificate and be accessible under a subdomain (e.g. s3.jamesveitch.dev).</p> <div class=highlight><pre><span></span><span class=c1># file: ~/rook/storage/bucket-ingress-https.yaml</span>
+</pre></div></p> <h4 id=ingress>Ingress</h4> <p>As with the dasboard we'll configure this to have a valid SSL certificate and be accessible under a subdomain (e.g. s3.jamesveitch.dev).</p> <div class=highlight><pre><span></span><span class=c1># file: ~/rook/storage/object/bucket-ingress-https.yaml</span>
 <span class=nt>apiVersion</span><span class=p>:</span> <span class="l l-Scalar l-Scalar-Plain">networking.k8s.io/v1beta1</span>
 <span class=nt>kind</span><span class=p>:</span> <span class="l l-Scalar l-Scalar-Plain">Ingress</span>
 <span class=nt>metadata</span><span class=p>:</span>
@@ -188,9 +188,9 @@ dd2f8a37e3bd769458faef03c0e4610d  /tmp/rookObj-download
     <span class=nt>rook_cluster</span><span class=p>:</span> <span class="l l-Scalar l-Scalar-Plain">rook-ceph</span>
     <span class=nt>rook_object_store</span><span class=p>:</span> <span class="l l-Scalar l-Scalar-Plain">my-store</span>
   <span class=nt>sessionAffinity</span><span class=p>:</span> <span class="l l-Scalar l-Scalar-Plain">None</span>
-</pre></div> <p>Apply this manifest with <code>kubectl apply -f ~/rook/storage/bucket-ingress-https.yaml</code> and, once the certificate has been provisioned, check that you get the <code>Fake LE</code> certificate before modifying and using the production server.</p> <div class=highlight><pre><span></span>kubectl -n rook-ceph delete certificate s3<span class=p>;</span> <span class=se>\</span>
-sed -i.bak <span class=s1>&#39;s/letsencrypt-staging/letsencrypt/g&#39;</span> ~/rook/storage/bucket-ingress-https.yaml<span class=p>;</span> <span class=se>\</span>
-kubectl apply -f ~/rook/storage/bucket-ingress-https.yaml<span class=p>;</span> <span class=se>\</span>
+</pre></div> <p>Apply this manifest with <code>kubectl apply -f ~/rook/storage/object/bucket-ingress-https.yaml</code> and, once the certificate has been provisioned, check that you get the <code>Fake LE</code> certificate before modifying and using the production server.</p> <div class=highlight><pre><span></span>kubectl -n rook-ceph delete certificate s3<span class=p>;</span> <span class=se>\</span>
+sed -i.bak <span class=s1>&#39;s/letsencrypt-staging/letsencrypt/g&#39;</span> ~/rook/storage/object/bucket-ingress-https.yaml<span class=p>;</span> <span class=se>\</span>
+kubectl apply -f ~/rook/storage/object/bucket-ingress-https.yaml<span class=p>;</span> <span class=se>\</span>
 watch kubectl -n rook-ceph get certificates
 </pre></div> <p>Once the certificate has been recreated you should be able to navigate to the address and see the below.</p> <p><img alt="Bucket Ingress" src="../img/Screenshot 2019-12-20 at 11.57.55.png"></p> <h5 id=connecting-to-the-bucket-with-a-client-external>Connecting to the bucket with a client (external)</h5> <p>Using <code>s3cmd</code> we can now connect to our bucket over SSL.</p> <p>Install the client (if not already available) <div class=highlight><pre><span></span>sudo apt-get update <span class=o>&amp;&amp;</span> sudo apt-get install -y s3cmd
 </pre></div></p> <p>Set some environment variables. <div class=highlight><pre><span></span><span class=nb>export</span> <span class=nv>AWS_HOST</span><span class=o>=</span>s3.jamesveitch.dev
@@ -199,8 +199,8 @@ watch kubectl -n rook-ceph get certificates
 </pre></div></p> <p>Now connect and list out all the buckets. <div class=highlight><pre><span></span>$ s3cmd ls --host<span class=o>=</span><span class=si>${</span><span class=nv>AWS_HOST</span><span class=si>}</span> --host-bucket<span class=o>=</span> --access_key<span class=o>=</span><span class=si>${</span><span class=nv>AWS_ACCESS_KEY_ID</span><span class=si>}</span> --secret_key<span class=o>=</span><span class=si>${</span><span class=nv>AWS_SECRET_ACCESS_KEY</span><span class=si>}</span> s3://
 
 <span class=m>2019</span>-12-20 <span class=m>11</span>:24  s3://ceph-bkt-adc7524d-3dc6-400d-9a33-74171d2a4786
-</pre></div></p> <h3 id=teardown>Teardown</h3> <p>See <a href=https://ceph.io/planet/removing-buckets-in-radosgw-and-their-contents/ >Removing buckets in radosgw (and their contents)</a></p> <div class=highlight><pre><span></span>kubectl delete -f ~/rook/storage/object-bucket-claim-delete.yaml<span class=p>;</span> <span class=se>\</span>
-kubectl delete -f ~/rook/storage/storageclass-bucket-delete.yaml
+</pre></div></p> <h3 id=teardown>Teardown</h3> <p>See <a href=https://ceph.io/planet/removing-buckets-in-radosgw-and-their-contents/ >Removing buckets in radosgw (and their contents)</a></p> <div class=highlight><pre><span></span>kubectl delete -f ~/rook/storage/object/object-bucket-claim-delete.yaml<span class=p>;</span> <span class=se>\</span>
+kubectl delete -f ~/rook/storage/object/storageclass-bucket-delete.yaml
 </pre></div> <p>And then, within the toolbox <div class=highlight><pre><span></span>radosgw-admin bucket rm --bucket<span class=o>=</span>ceph-bkt-5d1f6a77-3206-4140-8c6c-04533e4f8cb3 --purge-objects
 </pre></div></p> </article> </div> </div> </main> <footer class=md-footer> <div class=md-footer-nav> <nav class="md-footer-nav__inner md-grid"> <a href=../0201.filesystem/ title=Filesystem class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel=prev> <div class="md-flex__cell md-flex__cell--shrink"> <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i> </div> <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"> <span class=md-flex__ellipsis> <span class=md-footer-nav__direction> Previous </span> Filesystem </span> </div> </a> <a href=../../05.monitoring/00.monitoring.with.prometheus.and.grafana/ title="Prometheus and Grafana" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel=next> <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"> <span class=md-flex__ellipsis> <span class=md-footer-nav__direction> Next </span> Prometheus and Grafana </span> </div> <div class="md-flex__cell md-flex__cell--shrink"> <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i> </div> </a> </nav> </div> <div class="md-footer-meta md-typeset"> <div class="md-footer-meta__inner md-grid"> <div class=md-footer-copyright> <div class=md-footer-copyright__highlight id=copy> <!-- &copy Darth Veitcher 2019-&date --> </div> <script type=text/javascript>
             let theDate=new Date();
