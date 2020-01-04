@@ -1,0 +1,252 @@
+# file: ~/auth/ldap.yaml
+# Deploys an OpenLDAP and associated Admin containers
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: auth
+---
+# SECRETS
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ldap-user-creds
+  namespace: auth
+type: Opaque
+data:
+  LDAP_ADMIN_PASSWORD: YWRtaW4=
+  LDAP_CONFIG_PASSWORD: Y29uZmln
+---
+# LDAP
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: memberof-config
+  namespace: auth
+data:
+  memberOf.ldif: |
+    dn: olcOverlay=memberof,olcDatabase={1}mdb,cn=config
+    objectClass: olcOverlayConfig
+    objectClass: olcMemberOf
+    olcOverlay: memberof
+    olcMemberOfRefint: TRUE
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ldap-config
+  namespace: auth
+  labels:
+    app: ldap
+    tier: backend
+data:
+  LDAP_ORGANISATION: James Veitch
+  LDAP_DOMAIN: jamesveitch.dev
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ldap-data-pv-claim
+  namespace: auth
+  labels:
+    app: ldap
+    tier: backend
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ldap-config-pv-claim
+  namespace: auth
+  labels:
+    app: ldap
+    tier: backend
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ldap-certs-pv-claim
+  namespace: auth
+  labels:
+    app: ldap
+    tier: backend
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ldap
+  namespace: auth
+  labels:
+    app: ldap
+    tier: backend
+spec:
+  selector:
+    app: ldap
+    tier: backend
+  ports:
+    - name: ldap
+      protocol: TCP
+      port: 389
+      targetPort: 389
+    - name: ldaps-tcp
+      protocol: TCP
+      port: 636
+      targetPort: 636
+    - name: ldaps
+      protocol: UDP
+      port: 636
+      targetPort: 636
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ldap-deployment
+  namespace: auth
+  labels:
+    app: ldap
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ldap
+      tier: backend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: ldap
+        tier: backend
+    spec:
+      containers:
+      - name: ldap
+        image: osixia/openldap
+        args: ["--copy-service"]
+        env:
+          - name: LDAP_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: ldap-user-creds
+                key: LDAP_ADMIN_PASSWORD
+          - name: LDAP_CONFIG_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: ldap-user-creds
+                key: LDAP_CONFIG_PASSWORD
+        envFrom:
+        - configMapRef:
+            name: ldap-config
+        ports:
+        - containerPort: 389
+          name: ldap
+        - containerPort: 636
+          name: ldaps
+        volumeMounts:
+        - name: ldap-data
+          mountPath: /var/lib/ldap
+        - name: ldap-config
+          mountPath: /etc/ldap/slapd.d
+        - name: ldap-certs
+          mountPath: /container/service/slapd/assets/certs
+        - name: memberof-config
+          mountPath: /container/service/slapd/assets/config/bootstrap/ldif/custom/memberOf.ldif
+          subPath: memberOf.ldif
+        - name: container-run
+          mountPath: /container/run
+      volumes:
+      - name: ldap-data
+        persistentVolumeClaim:
+          claimName: ldap-data-pv-claim
+      - name: ldap-config
+        persistentVolumeClaim:
+          claimName: ldap-config-pv-claim
+      - name: ldap-certs
+        persistentVolumeClaim:
+          claimName: ldap-certs-pv-claim
+      - name: memberof-config
+        configMap:
+          name: memberof-config
+      - name: container-run
+        emptyDir: {}
+---
+# LDAP Admin
+# file: ~/auth/ldap-admin.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ldapadmin-config
+  namespace: auth
+  labels:
+    app: ldap
+    tier: frontend
+data:
+  PHPLDAPADMIN_LDAP_HOSTS: "ldap.auth"
+  PHPLDAPADMIN_HTTPS: "false"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ldapadmin
+  namespace: auth
+  labels:
+    app: ldap
+    tier: frontend
+spec:
+  type: LoadBalancer
+  selector:
+    app: ldap
+    tier: frontend
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ldapadmin-deployment
+  namespace: auth
+  labels:
+    app: ldap
+    tier: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ldap
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: ldap
+        tier: frontend
+    spec:
+      containers:
+      - name: ldapadmin
+        image: osixia/phpldapadmin
+        envFrom:
+        - configMapRef:
+            name: ldapadmin-config
+        ports:
+        - containerPort: 80
+          name: http

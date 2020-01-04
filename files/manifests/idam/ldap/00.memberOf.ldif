@@ -1,0 +1,8 @@
+# Used to enforce referential integrity and add `memberOf`
+# attribute to a user when they're added as a `member` of
+# a `groupOfNames` group.
+dn: olcOverlay=memberof,olcDatabase={1}mdb,cn=config
+objectClass: olcOverlayConfig
+objectClass: olcMemberOf
+olcOverlay: memberof
+olcMemberOfRefint: TRUE

@@ -1,0 +1,291 @@
+# file: ~/auth/keycloak.yaml
+# Deploys a Keycloak and associated Postgres containers
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: auth
+---
+# SECRETS
+apiVersion: v1
+kind: Secret
+metadata:
+  name: keycloak-db-creds
+  namespace: auth
+type: Opaque
+data:
+  DB_USER: cG9zdGdyZXM=
+  DB_PASSWORD: YWRtaW4=
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: keycloak-user-creds
+  namespace: auth
+type: Opaque
+data:
+  KEYCLOAK_USER: YWRtaW4=
+  KEYCLOAK_PASSWORD: cGFzc3dvcmQ=
+---
+# KEYCLOAK
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: keycloak
+  namespace: auth
+spec:
+  secretName: keycloak-certs
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+  organization:
+  - jamesveitch
+  commonName: auth.jamesveitch.dev
+  isCA: false
+  keySize: 2048
+  keyAlgorithm: rsa
+  keyEncoding: pkcs1
+  usages:
+    - server auth
+    - client auth
+  dnsNames:
+  - auth.jamesveitch.dev
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+    group: cert-manager.io
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: keycloak-external-ingress
+  namespace: auth
+  labels:
+    app: keycloak
+    tier: frontend
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/issuer: "letsencrypt"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  tls:
+  - hosts:
+    - auth.jamesveitch.dev
+    secretName: keycloak-certs
+  rules:
+  - host: auth.jamesveitch.dev
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: keycloak
+          servicePort: 8080
+---
+# Account page
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: keycloak-external-ingress-account
+  namespace: auth
+  labels:
+    app: keycloak
+    tier: frontend
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/issuer: "letsencrypt"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /auth/realms/Development/account/$1
+spec:
+  tls:
+  - hosts:
+    - auth.jamesveitch.dev
+    secretName: keycloak-certs
+  rules:
+  - host: auth.jamesveitch.dev
+    http:
+      paths:
+      - path: /account(.*)
+        backend:
+          serviceName: keycloak
+          servicePort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+  namespace: auth
+  labels:
+    app: keycloak
+    tier: frontend
+spec:
+  selector:
+    app: keycloak
+    tier: frontend
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-config
+  namespace: auth
+  labels:
+    app: keycloak
+    tier: frontend
+data:
+  DB_ADDR: keycloak-db.auth
+  # This is required to run keycloak behind a service,ingress etc		
+  PROXY_ADDRESS_FORWARDING: "true"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak-deployment
+  namespace: auth
+  labels:
+    app: keycloak
+    tier: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: keycloak
+        tier: frontend
+    spec:
+      containers:
+      - name: keycloak
+        image: jboss/keycloak
+        envFrom:
+        - secretRef:
+            name: keycloak-db-creds
+        - secretRef:
+            name: keycloak-user-creds
+        - configMapRef:
+            name: keycloak-config
+        ports:
+        - containerPort: 8080
+          name: keycloak
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-db-config
+  namespace: auth
+  labels:
+    app: keycloak
+    tier: postgres
+data:
+  POSTGRES_DB: keycloak
+  PGDATA: /var/lib/postgresql/data/pgdata
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: keycloak-db-data-pv-claim
+  namespace: auth
+  labels:
+    app: keycloak
+    tier: postgres
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: keycloak-db-config-pv-claim
+  namespace: auth
+  labels:
+    app: keycloak
+    tier: postgres
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak-db
+  namespace: auth
+  labels:
+    app: keycloak
+    tier: postgres
+spec:
+  selector:
+    app: keycloak
+    tier: postgres
+  ports:
+    - name: postgres
+      protocol: TCP
+      port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak-db-deployment
+  namespace: auth
+  labels:
+    app: keycloak
+    tier: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+      tier: postgres
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: keycloak
+        tier: postgres
+    spec:
+      containers:
+      - name: keycloak-db
+        image: postgres:alpine
+        env:
+          # Secrets
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: keycloak-db-creds
+                key: DB_USER
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: keycloak-db-creds
+                key: DB_PASSWORD
+        envFrom:
+        - configMapRef:
+            name: keycloak-db-config
+        ports:
+        - containerPort: 5432
+          name: postgres
+        volumeMounts:
+        - name: keycloak-db-data
+          mountPath: /var/lib/postgresql/data
+        - name: keycloak-db-config
+          mountPath: /usr/share/postgresql
+      volumes:
+      - name: keycloak-db-data
+        persistentVolumeClaim:
+          claimName: keycloak-db-data-pv-claim
+      - name: keycloak-db-config
+        persistentVolumeClaim:
+          claimName: keycloak-db-config-pv-claim

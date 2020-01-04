@@ -1,0 +1,18 @@
+# file: ~/cert-manager/letsencrypt-staging.yaml
+apiVersion: cert-manager.io/v1alpha2
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging
+spec:
+  acme:
+    # The ACME server URL and email address for ACME registration
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: lol@cats.com
+    # Name of the secret to store the ACME account private key
+    privateKeySecretRef:
+      name: letsencrypt-staging-key
+    solvers:
+    # Enable HTTP01 validations
+    - http01:
+       ingress:
+         class: nginx
