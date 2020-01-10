@@ -12,7 +12,7 @@ storage:
       path:       "/etc/hostname"
       mode:       0644
       contents:
-        inline: banks
+        inline: banks.local
     # create avahi.conf
     - filesystem: "root"
       path: "/etc/dbus-1/system.d/avahi.conf"
