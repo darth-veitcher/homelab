@@ -1,0 +1,96 @@
+# file: ~/auth/dashboard-keycloak-proxy.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubernetes-dashboard-proxy
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kubernetes-dashboard-proxy
+  template:
+    metadata:
+      labels:
+        app: kubernetes-dashboard-proxy
+    spec:
+      containers:
+      - image: quay.io/keycloak/keycloak-gatekeeper
+        name: kubernetes-dashboard-proxy
+        args:
+          - --listen=0.0.0.0:3000
+          - --discovery-url=https://auth.jamesveitch.dev/auth/realms/development
+          - --client-id=kubernetes-dashboard
+          - --client-secret=01362c44-2212-4656-8dd1-c1fac6e791b2
+          - --redirection-url=https://dashboard.jamesveitch.dev
+          - --enable-refresh-tokens=true
+          - --encryption-key=MzlmMDMzM2Y2NzFiZTk3NDQ3NTU0YWMz    # 32 bytes string
+          - --upstream-url=https://kubernetes-dashboard.monitoring.svc.cluster.local
+          - --resources=uri=/*
+          # - --match-claims=iss=https://auth.jamesveitch.dev/auth/realms/development
+          # - --resources="uri=/*|roles=cluster-admin"
+          # - --tls-cert=/certs/tls.crt
+          # - --tls-private-key=/certs/tls.key
+        ports:
+        - containerPort: 3000
+        # volumeMounts:
+        #   - name: kubernetes-dashboard-certs
+        #     mountPath: /certs
+        livenessProbe:
+          httpGet:
+            path: /oauth/health
+            port: 3000
+          initialDelaySeconds: 3
+          timeoutSeconds: 2
+        readinessProbe:
+          httpGet:
+            path: /oauth/health
+            port: 3000
+          initialDelaySeconds: 3
+          timeoutSeconds: 2
+      # volumes:
+      #   - name: kubernetes-dashboard-certs
+      #     secret:
+      #       secretName: kubernetes-dashboard-certs
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubernetes-dashboard-proxy
+  namespace: monitoring
+spec:
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 3000
+    targetPort: 3000
+  selector:
+    app: kubernetes-dashboard-proxy
+---
+# Modify our previous ingress
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: dashboard-external-ingress
+  namespace: monitoring
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/issuer: "letsencrypt"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    # nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    # nginx.ingress.kubernetes.io/server-snippet: |
+    #   proxy_ssl_verify off;
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "64k"
+spec:
+  tls:
+   - hosts:
+     - dashboard.jamesveitch.dev
+     secretName: kubernetes-dashboard-certs
+  rules:
+  - host: dashboard.jamesveitch.dev
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: kubernetes-dashboard-proxy
+          servicePort: 3000

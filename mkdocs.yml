@@ -42,7 +42,8 @@ nav:
     - 'Keycloak': '02.idam/02.keycloak.md'
     - 'Integration':
         - 'Overview': '02.idam/03.integration/00.integration.md'
-        - 'Kubernetes': '02.idam/03.integration/01.kubernetes.md'
+        - 'Kubernetes (API)': '02.idam/03.integration/01.kubernetes.md'
+        - 'Kubernetes (Dashboard)': '02.idam/03.integration/02.kubernetes.dashboard.md'
   - 'Snippets':
     - 'Storage': '99.snippets/storage.disks.md'
     - 'Kubernetes': '99.snippets/kubernetes.md'
