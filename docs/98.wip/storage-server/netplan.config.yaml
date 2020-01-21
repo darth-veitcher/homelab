@@ -1,0 +1,22 @@
+# /etc/netplan/config.yaml
+# sudo netplan apply
+network:
+  version: 2
+  ethernets:
+    eports:
+      match:
+        name: enp*
+      optional: true
+  bonds:
+    bond0:
+      dhcp4: true
+      interfaces: [eports]
+      # addresses: [192.168.0.111/24]
+      # gateway4: 192.168.0.1
+      # nameservers:
+      #   search: [local]
+      #   addresses: [8.8.8.8, 8.8.4.4]
+      parameters:
+        mode: 802.3ad
+        lacp-rate: fast
+        transmit-hash-policy: layer2

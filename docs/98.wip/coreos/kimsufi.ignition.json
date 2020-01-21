@@ -1,0 +1,90 @@
+{
+  "ignition": {
+    "config": {},
+    "security": {
+      "tls": {}
+    },
+    "timeouts": {},
+    "version": "2.2.0"
+  },
+  "networkd": {},
+  "passwd": {
+    "users": [
+      {
+        "name": "core",
+        "sshAuthorizedKeys": [
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDZsCEU/2uFV4YpBjoOsSIY1yRta3mGdd81TyvZFGzVsXEn7BbkJXPI6I3r8vXQaRgQvr//yj/Q3whuGlcBuH8PuCAUlHg2oJIMJ+NsIW/E300nzu0j8lltDvLg4Sl1Ncag4Hy5JtjeWyoouHCUajxN8jRKqXW1pS3hZO2+UCN2t6ZNl7n01cZZviVWcoPe2tUpy2O52iWW6Wt7cgWFSBVPCmnD3p5Vwnz2d5SrSgzQ+9Qq/jrU0ZGF32wLt/c3OzHMBRLYNJviMaEZfonIjTmpqOxUQxXzO25K3/A0QHeEtBInKpNr7TUJ/U0rtpNrw2Th6wsc4pjLLM9R9U6EbH9D james@jamesveitch.com"
+        ]
+      }
+    ]
+  },
+  "storage": {
+    "disks": [
+      {
+        "device": "/dev/sda",
+        "partitions": [
+          {
+            "label": "ROOT",
+            "number": 1,
+            "size": 20480,
+            "start": 0
+          },
+          {
+            "label": "DATA",
+            "number": 2
+          }
+        ],
+        "wipeTable": true
+      }
+    ],
+    "files": [
+      {
+        "filesystem": "root",
+        "path": "/etc/hostname",
+        "contents": {
+          "source": "data:,donaldson.local",
+          "verification": {}
+        },
+        "mode": 420
+      },
+      {
+        "filesystem": "root",
+        "path": "/etc/coreos/update.conf",
+        "contents": {
+          "source": "data:,GROUP%3Dstable%0AREBOOT_STRATEGY%3D%22reboot%22%0ALOCKSMITHD_REBOOT_WINDOW_START%3D%22Thu%2004%3A00%22%0ALOCKSMITHD_REBOOT_WINDOW_LENGTH%3D%222h%22",
+          "verification": {}
+        },
+        "mode": 420
+      }
+    ],
+    "filesystems": [
+      {
+        "mount": {
+          "device": "/dev/disk/by-label/ROOT",
+          "format": "ext4",
+          "label": "ROOT",
+          "wipeFilesystem": true
+        },
+        "name": "ROOT"
+      },
+      {
+        "mount": {
+          "device": "/dev/disk/by-label/DATA",
+          "format": "btrfs",
+          "label": "DATA",
+          "wipeFilesystem": true
+        },
+        "name": "DATA"
+      }
+    ]
+  },
+  "systemd": {
+    "units": [
+      {
+        "contents": "[Unit]\nBefore=local-fs.target\n[Mount]\nWhat=/dev/disk/by-label/DATA\nWhere=/mnt/data\nType=btrfs\n[Install]\nWantedBy=local-fs.target\n",
+        "enable": true,
+        "name": "mnt-data.mount"
+      }
+    ]
+  }
+}

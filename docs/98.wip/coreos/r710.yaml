@@ -1,0 +1,120 @@
+# Container Linux Config
+passwd:
+  users:
+    # modify the existing core user and give them my ssh public key
+    - name: core
+      ssh_authorized_keys:
+        - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDZsCEU/2uFV4YpBjoOsSIY1yRta3mGdd81TyvZFGzVsXEn7BbkJXPI6I3r8vXQaRgQvr//yj/Q3whuGlcBuH8PuCAUlHg2oJIMJ+NsIW/E300nzu0j8lltDvLg4Sl1Ncag4Hy5JtjeWyoouHCUajxN8jRKqXW1pS3hZO2+UCN2t6ZNl7n01cZZviVWcoPe2tUpy2O52iWW6Wt7cgWFSBVPCmnD3p5Vwnz2d5SrSgzQ+9Qq/jrU0ZGF32wLt/c3OzHMBRLYNJviMaEZfonIjTmpqOxUQxXzO25K3/A0QHeEtBInKpNr7TUJ/U0rtpNrw2Th6wsc4pjLLM9R9U6EbH9D james@jamesveitch.com
+storage:
+  files:
+    # set the hostname
+    - filesystem: "root"
+      path:       "/etc/hostname"
+      mode:       0644
+      contents:
+        inline: banks.local
+    # create avahi.conf
+    - filesystem: "root"
+      path: "/etc/dbus-1/system.d/avahi.conf"
+      mode: 0644
+      contents: 
+        inline: | 
+          <!DOCTYPE busconfig PUBLIC
+          "-//freedesktop//DTD D-Bus Bus Configuration 1.0//EN"
+          "http://www.freedesktop.org/standards/dbus/1.0/busconfig.dtd">
+          <busconfig>
+            <policy user="root">
+                <allow own="org.freedesktop.Avahi"/>
+            </policy>
+          </busconfig>
+  filesystems:
+    # define the local data filesystem
+    - name: data
+      mount:
+        device: /dev/sdb
+        format: ext4
+        wipe_filesystem: false
+        label: DATA
+systemd:
+  units:
+    # mount the local data filesystem
+    - name: mnt-data.mount
+      enable: true
+      contents: |
+        [Unit]
+        Before=local-fs.target
+        [Mount]
+        What=/dev/sdb
+        Where=/mnt/data
+        Type=ext4
+        [Install]
+        WantedBy=local-fs.target
+    - name: avahi.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Avahi mdns/zeroconf daemon
+        Requires=docker.service
+        After=docker.service
+
+        [Service]
+        TimeoutStartSec=10m
+        TimeoutStopSec=90s
+        Restart=always
+        RestartSec=10s
+
+        # Get CoreOS environmental variables
+        EnvironmentFile=/etc/environment
+
+        ExecStartPre=-/usr/bin/docker kill %p
+        ExecStartPre=-/usr/bin/docker rm -f %p
+        ExecStartPre=/usr/bin/docker pull ianblenke/avahi:latest
+        ExecStart=/usr/bin/docker run \
+                                --name %p \
+                                --net=host \
+                                -v /var/run/dbus:/var/run/dbus \
+                                ianblenke/avahi:latest
+        
+        ExecStop=/usr/bin/docker stop -t 10 %p
+        ExecStop=/usr/bin/docker rm -f %p
+
+        [Install]
+        WantedBy=multi-user.target
+networkd:
+  units:
+    # setup bonded LACP connection
+    - name: 30-bond1.network
+      contents: |
+        [Match]
+        Name=bond1
+
+        [Network]
+        DHCP=ipv4
+    - name: 30-bond1.netdev
+      contents: |
+        [NetDev]
+        Name=bond1
+        Kind=bond
+
+        [Bond]
+        Mode=802.3ad
+        MIIMonitorSec=1s
+        LACPTransmitRate=fast
+        UpDelaySec=2s
+        DownDelaySec=8s
+    - name: 30-bond1-slaves.network
+      contents: |
+        [Match]
+        MACAddress=B8:AC:6F:84:AE:10 AC:6F:84:AE:12 AC:6F:84:AE:14 B8:AC:6F:84:AE:16
+
+        [Network]
+        Bond=bond1
+# how we will perform automatic updates. 
+# See https://github.com/coreos/locksmith#reboot-windows and 
+# https://coreos.com/os/docs/latest/clc-examples.html#updates-and-locksmithd
+update:
+  group: stable
+locksmith:
+  reboot_strategy: reboot
+  window_start: Thu 04:00
+  window_length: 2h

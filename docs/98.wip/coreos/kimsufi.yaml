@@ -1,0 +1,70 @@
+# Container Linux Config
+passwd:
+  users:
+    # modify the existing core user and give them my ssh public key
+    - name: core
+      ssh_authorized_keys:
+        - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDZsCEU/2uFV4YpBjoOsSIY1yRta3mGdd81TyvZFGzVsXEn7BbkJXPI6I3r8vXQaRgQvr//yj/Q3whuGlcBuH8PuCAUlHg2oJIMJ+NsIW/E300nzu0j8lltDvLg4Sl1Ncag4Hy5JtjeWyoouHCUajxN8jRKqXW1pS3hZO2+UCN2t6ZNl7n01cZZviVWcoPe2tUpy2O52iWW6Wt7cgWFSBVPCmnD3p5Vwnz2d5SrSgzQ+9Qq/jrU0ZGF32wLt/c3OzHMBRLYNJviMaEZfonIjTmpqOxUQxXzO25K3/A0QHeEtBInKpNr7TUJ/U0rtpNrw2Th6wsc4pjLLM9R9U6EbH9D james@jamesveitch.com
+storage:
+  files:
+    # set the hostname
+    - filesystem: "root"
+      path:       "/etc/hostname"
+      mode:       0644
+      contents:
+        inline: donaldson.local
+  # Customise the primary disk (2TB) with the following
+  # - Partition 1. 20GB (mount to '/')
+  # - Partition 2. Remainder (mount to '/mnt/data')
+  # See: https://coreos.com/os/docs/latest/root-filesystem-placement.html
+  # Good reference here https://github.com/number5/cloud-init/blob/master/doc/examples/cloud-config-disk-setup.txt
+  # https://github.com/coreos/docs/blob/master/os/root-filesystem-placement.md
+  # https://coreos.com/ignition/docs/latest/examples.html#create-a-raid-enabled-data-volume
+  disks:
+    - device: /dev/sda
+      wipe_table: true
+      partitions:
+      - label: ROOT
+        number: 1
+        # size: 20480
+        # start: 0
+      - label: DATA
+        number: 2
+  # Now add the filesystems to these partitions
+  filesystems:
+    - name: ROOT
+      mount:
+        device: /dev/disk/by-label/ROOT
+        format: ext4
+        wipe_filesystem: true
+        label: ROOT
+    - name: DATA
+      mount:
+        device: /dev/disk/by-label/DATA
+        format: btrfs
+        wipe_filesystem: true
+        label: DATA
+# and then create the mount routines
+systemd:
+  units:
+    # mount the local data filesystem
+    - name: mnt-data.mount
+      enable: true
+      contents: |
+        [Unit]
+        Before=local-fs.target
+        [Mount]
+        What=/dev/disk/by-label/DATA
+        Where=/mnt/data
+        Type=btrfs
+        [Install]
+        WantedBy=local-fs.target
+# how we will perform automatic updates. 
+# See https://github.com/coreos/locksmith#reboot-windows and 
+# https://coreos.com/os/docs/latest/clc-examples.html#updates-and-locksmithd
+update:
+  group: stable
+locksmith:
+  reboot_strategy: reboot
+  window_start: Thu 04:00
+  window_length: 2h

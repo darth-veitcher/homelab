@@ -1,0 +1,66 @@
+apiVersion: ceph.rook.io/v1
+kind: CephFilesystem
+metadata:
+  name: mediafs-ssd
+  namespace: rook-ceph
+spec:
+  metadataPool:
+    failureDomain: osd
+    replicated:
+      size: 1
+    deviceClass: ssd
+  dataPools:
+    - failureDomain: osd
+      replicated:
+        size: 1
+      deviceClass: ssd
+  preservePoolsOnDelete: true
+  metadataServer:
+    activeCount: 1
+    activeStandby: true
+    annotations:
+    placement:
+    resources:
+---
+apiVersion: ceph.rook.io/v1
+kind: CephFilesystem
+metadata:
+  name: mediafs
+  namespace: rook-ceph
+spec:
+  metadataPool:
+    failureDomain: osd
+    erasureCoded:
+      dataChunks: 2
+      codingChunks: 1
+    deviceClass: hdd
+  dataPools:
+    - failureDomain: osd
+      erasureCoded:
+        dataChunks: 2
+        codingChunks: 1
+      deviceClass: hdd
+  preservePoolsOnDelete: true
+  metadataServer:
+    activeCount: 1
+    activeStandby: true
+    annotations:
+    placement:
+    resources:
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: csi-mediafs
+provisioner: rook-ceph.cephfs.csi.ceph.com
+parameters:
+  clusterID: rook-ceph
+  fsName: mediafs
+  pool: mediafs-data0
+  # The secrets contain Ceph admin credentials. These are generated automatically by the operator
+  # in the same namespace as the cluster.
+  csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
+  csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
+  csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
+  csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
+reclaimPolicy: Delete
