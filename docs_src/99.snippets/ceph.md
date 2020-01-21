@@ -30,6 +30,7 @@ kubectl delete -f ~/rook/toolbox.yaml; \
 kubectl delete -f ~/rook/cluster.yaml; \
 kubectl delete -f ~/rook/operator.yaml; \
 kubectl delete -f ~/rook/common.yaml; \
+kubectl delete -f ~/rook/; \
 kubectl delete namespace rook-ceph; \
 rm -rf ~/rook; \
 sudo rm -rf /var/lib/rook/*
