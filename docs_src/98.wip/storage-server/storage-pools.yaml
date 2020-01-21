@@ -1,0 +1,48 @@
+# Cache Tier Testing
+# ---
+# Create a pool with only 1 replica for the
+# SSDs to use.
+# Use just ssds for this.
+apiVersion: ceph.rook.io/v1
+kind: CephBlockPool
+metadata:
+  name: hot-storage
+  namespace: rook-ceph
+spec:
+  failureDomain: osd
+  replicated:
+    size: 1
+  deviceClass: ssd
+---
+# Create a pool with erasure coding for the
+# backing tier to use for persistence (media).
+# Use just hdds for this.
+apiVersion: ceph.rook.io/v1
+kind: CephBlockPool
+metadata:
+  name: ecpool
+  namespace: rook-ceph
+spec:
+  failureDomain: osd
+  erasureCoded:
+    dataChunks: 2
+    codingChunks: 1
+  deviceClass: hdd
+# ---
+# # Create a pool with erasure coding for the
+# # backing tier to use for persistence (docs).
+# # Use the failure domain of `region`
+# # which will inherit from k8s topology. See
+# # https://rook.io/docs/rook/v1.1/ceph-cluster-crd.html#custom-location-information-for-osds
+# # Use any available device class for this.
+# # Means that docs will be replicated between physical locations.
+# apiVersion: ceph.rook.io/v1
+# kind: CephBlockPool
+# metadata:
+#   name: ecpool
+#   namespace: rook-ceph
+# spec:
+#   failureDomain: region
+#   erasureCoded:
+#     dataChunks: 2
+#     codingChunks: 1

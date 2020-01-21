@@ -1,0 +1,40 @@
+apiVersion: ceph.rook.io/v1
+kind: CephCluster
+metadata:
+  name: rook-ceph
+  namespace: rook-ceph
+spec:
+  cephVersion:
+    image: ceph/ceph:v14.2.5
+    allowUnsupported: false
+  dataDirHostPath: /var/lib/rook
+  skipUpgradeChecks: false
+  continueUpgradeAfterChecksEvenIfNotHealthy: false
+  mon:
+    count: 3
+    allowMultiplePerNode: true  # false
+  dashboard:
+    enabled: true
+    ssl: true
+  monitoring:
+    enabled: false
+    rulesNamespace: rook-ceph
+  network:
+    hostNetwork: false
+  rbdMirroring:
+    workers: 0
+  annotations:
+  resources:
+  removeOSDsIfOutAndSafeToRemove: false
+  storage: # cluster level storage configuration and selection
+    useAllNodes: false
+    useAllDevices: false
+    config:
+    nodes:
+    - name: "clarke"
+      devicePathFilter: ^/dev/mapper/data.*
+  disruptionManagement:
+    managePodBudgets: false
+    osdMaintenanceTimeout: 30
+    manageMachineDisruptionBudgets: false
+    machineDisruptionBudgetNamespace: openshift-machine-api
