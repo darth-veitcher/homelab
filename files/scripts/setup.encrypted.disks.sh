@@ -2,7 +2,7 @@
 # Wipes disks excluding the ROOT and USB keyfile and then encrypts them with the USB key.
 # Needs to be run as root.
 export ROOT_DISK=; \
-export KEYFILE_DISK=g; \
+export KEYFILE_DISK=a; \
 export DISKS=$(sudo lsblk --scsi --noheadings --list --output KNAME | grep sd[^$KEYFILE_DISK^$ROOT_DISK]); \
 echo $DISKS; \
 echo "# DATA devices" | sudo tee -a /etc/crypttab
@@ -10,7 +10,7 @@ for d in $DISKS; do
   sudo umount /dev/$d; \
   sudo wipefs -af /dev/$d; \
   sudo cryptsetup luksFormat -q -s 512 -c aes-xts-plain64 -d /mnt/key/.secretkey /dev/$d; \
-  export BLKID=$(blkid -s UUID -o value /dev/$d); \
+  export BLKID=$(sudo blkid -s UUID -o value /dev/$d); \
   sudo tee -a /etc/crypttab <<EOF
   data-${BLKID}  UUID=${BLKID}    /mnt/key/.secretkey    luks,retry=1,timeout=180
 EOF
