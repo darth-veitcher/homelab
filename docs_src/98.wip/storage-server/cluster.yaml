@@ -31,7 +31,7 @@ spec:
     useAllDevices: false
     config:
     nodes:
-    - name: "clarke"
+    - name: "clarke.local"
       devicePathFilter: ^/dev/mapper/data.*
   disruptionManagement:
     managePodBudgets: false
