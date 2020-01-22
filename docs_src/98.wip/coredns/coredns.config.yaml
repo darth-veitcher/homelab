@@ -1,0 +1,36 @@
+# 192.168.0.114 = Ingress Address
+# We used the forward . tls for more secure forward DNS from cloudflare
+# See https://www.sanisimov.com/2019/02/using-coredns-metallb-on-bare-metal-kubernetes-clusters/
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: external-dns
+data:
+  Corefile: |
+    .:53 {
+        errors
+        health
+        file /etc/coredns/zones/yarr.wtf yarr.wtf
+        prometheus :9153
+        # forward . tls://1.1.1.1 tls://1.0.0.1 {
+        #   tls_servername cloudflare-dns.com
+        #   health_check 5s
+        # }
+        proxy . /etc/resolv.conf
+        cache 30
+        loop
+        reload
+        loadbalance
+    }
+  yarr.wtf: |
+    $TTL 60
+    $ORIGIN yarr.wtf.
+    @                   IN	SOA sns.dns.icann.org. noc.dns.icann.org. (
+              2017042745 ; serial
+              7200       ; refresh (2 hours)				
+              3600       ; retry (1 hour)			
+              1209600    ; expire (2 weeks)				
+              3600       ; minimum (1 hour)				
+              )
+    @               IN A     192.168.88.114
+    *.yarr.wtf.     IN A     192.168.88.114
