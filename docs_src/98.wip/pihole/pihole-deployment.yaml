@@ -21,6 +21,16 @@ spec:
       containers:
         - name: pihole
           image: pihole/pihole
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
           ports:
           - containerPort: 80
             name: pihole-http
@@ -38,8 +48,6 @@ spec:
             name: client-udp
             protocol: UDP
           env:
-            - name: ServerIP
-              value: 192.168.0.249
             - name: WEBPASSWORD
               valueFrom:
                 secretKeyRef:
@@ -51,7 +59,28 @@ spec:
           - mountPath: /etc/dnsmasq.d/02-custom.conf
             name: custom-dnsmasq
             subPath: 02-custom.conf
-      securityContext: {}
+          livenessProbe:
+            periodSeconds: 5
+            failureThreshold: 2
+            httpGet:
+              path: /
+              port: 80
+              scheme: HTTP
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 20
+            timeoutSeconds: 5
+          resources:
+            limits:
+              cpu: 0.5
+              memory: 4096Mi
+            requests:
+              cpu: 0.1
+              memory: 512Mi
+          securityContext: {}
       terminationGracePeriodSeconds: 30
       # Only run this at home
       # https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
@@ -67,7 +96,7 @@ spec:
       - name: config
         # https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
         hostPath:
-          path: /opt/pihole/config
+          path: /opt/pihole
           type: DirectoryOrCreate
       - name: custom-dnsmasq
         configMap:
