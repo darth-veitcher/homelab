@@ -1,0 +1,9 @@
+apiVersion: v1
+data:
+  02-custom.conf: |
+    address=/.yarr.wtf/192.168.0.114
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: pihole-custom-dnsmasq
+  namespace: home

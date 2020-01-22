@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pihole
+  namespace: home
+  labels:
+    app: pihole
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pihole
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: pihole
+      namespace: home
+    spec:
+      containers:
+        - name: pihole
+          image: pihole/pihole
+          ports:
+          - containerPort: 80
+            name: pihole-http
+            protocol: TCP
+          - containerPort: 53
+            name: dns-udp
+            protocol: UDP
+          - containerPort: 53
+            name: dns-tcp
+            protocol: TCP
+          - containerPort: 443
+            name: pihole-https
+            protocol: TCP
+          - containerPort: 67
+            name: client-udp
+            protocol: UDP
+          env:
+            - name: ServerIP
+              value: 192.168.0.249
+            - name: WEBPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: pihole-webpassword
+          volumeMounts:
+          - mountPath: /etc/pihole
+            name: config
+          - mountPath: /etc/dnsmasq.d/02-custom.conf
+            name: custom-dnsmasq
+            subPath: 02-custom.conf
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      # Only run this at home
+      # https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+      nodeSelector:
+        topology.kubernetes.io/region: house
+      # https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        nameservers:
+          - 127.0.0.1
+          - 1.1.1.1
+      volumes:
+      - name: config
+        # https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
+        hostPath:
+          path: /opt/pihole/config
+          type: DirectoryOrCreate
+      - name: custom-dnsmasq
+        configMap:
+          defaultMode: 420
+          name: pihole-custom-dnsmasq
