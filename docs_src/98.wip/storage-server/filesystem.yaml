@@ -1,3 +1,4 @@
+# https://github.com/rook/rook/blob/master/Documentation/ceph-filesystem-crd.md
 apiVersion: ceph.rook.io/v1
 kind: CephFilesystem
 metadata:
@@ -25,7 +26,7 @@ spec:
 apiVersion: ceph.rook.io/v1
 kind: CephFilesystem
 metadata:
-  name: mediafs
+  name: mediafs-ec
   namespace: rook-ceph
 spec:
   metadataPool:
@@ -47,20 +48,3 @@ spec:
     annotations:
     placement:
     resources:
----
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: csi-mediafs
-provisioner: rook-ceph.cephfs.csi.ceph.com
-parameters:
-  clusterID: rook-ceph
-  fsName: mediafs
-  pool: mediafs-data0
-  # The secrets contain Ceph admin credentials. These are generated automatically by the operator
-  # in the same namespace as the cluster.
-  csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
-  csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
-  csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
-  csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
-reclaimPolicy: Delete
