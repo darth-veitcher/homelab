@@ -9,7 +9,7 @@ metadata:
   name: pihole-udp
   namespace: home
   annotations:
-    metallb.universe.tf/allow-shared-ip: pihole
+    metallb.universe.tf/allow-shared-ip: pihole-svc
   labels:
     app: enternal-dns
 spec:
@@ -20,6 +20,11 @@ spec:
     - name: dns-udp
       port: 53
       protocol: UDP
+      targetPort: dns-udp
+    - name: client-udp
+      port: 67
+      protocol: UDP
+      targetPort: client-udp
   selector:
     app: pihole
   sessionAffinity: None
@@ -30,7 +35,7 @@ metadata:
   name: pihole-tcp
   namespace: home
   annotations:
-    metallb.universe.tf/allow-shared-ip: pihole
+    metallb.universe.tf/allow-shared-ip: pihole-svc
   labels:
     app: pihole
 spec:
@@ -41,6 +46,7 @@ spec:
     - name: dns-tcp
       port: 53
       protocol: TCP
+      targetPort: dns
     - name: pihole-http
       port: 80
       protocol: TCP
