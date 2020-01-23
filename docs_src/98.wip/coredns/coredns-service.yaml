@@ -8,7 +8,7 @@ metadata:
     app: enternal-dns
 spec:
   type: LoadBalancer
-  loadBalancerIP: 192.168.0.249
+  loadBalancerIP: 192.168.0.222
   ports:
     - name: dns-udp
       port: 53
@@ -26,7 +26,7 @@ metadata:
     app: external-dns
 spec:
   type: LoadBalancer
-  loadBalancerIP: 192.168.0.249
+  loadBalancerIP: 192.168.0.222
   ports:
     - name: dns-tcp
       port: 53

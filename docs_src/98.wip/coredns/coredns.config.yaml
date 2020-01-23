@@ -12,11 +12,12 @@ data:
         health
         file /etc/coredns/zones/yarr.wtf yarr.wtf
         prometheus :9153
-        # forward . tls://1.1.1.1 tls://1.0.0.1 {
-        #   tls_servername cloudflare-dns.com
-        #   health_check 5s
-        # }
-        proxy . /etc/resolv.conf
+        # forward . /etc/resolv.conf
+        forward . tls://1.1.1.1 tls://1.0.0.1 {
+          tls_servername tls.cloudflare-dns.com
+          policy sequential
+          health_check 5s
+        }
         cache 30
         loop
         reload
@@ -32,5 +33,5 @@ data:
               1209600    ; expire (2 weeks)				
               3600       ; minimum (1 hour)				
               )
-    @               IN A     192.168.88.114
-    *.yarr.wtf.     IN A     192.168.88.114
+    @              IN A     192.168.0.114
+    *.yarr.wtf.    IN A     192.168.0.114
