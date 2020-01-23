@@ -21,16 +21,6 @@ spec:
       containers:
         - name: pihole
           image: pihole/pihole
-          livenessProbe:
-            failureThreshold: 5
-            httpGet:
-              path: /health
-              port: 8080
-              scheme: HTTP
-            initialDelaySeconds: 60
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 5
           ports:
           - containerPort: 80
             name: pihole-http
@@ -48,6 +38,8 @@ spec:
             name: client-udp
             protocol: UDP
           env:
+            - name: ServerIP
+              value: 192.168.0.222
             - name: WEBPASSWORD
               valueFrom:
                 secretKeyRef:
@@ -59,26 +51,28 @@ spec:
           - mountPath: /etc/dnsmasq.d/02-custom.conf
             name: custom-dnsmasq
             subPath: 02-custom.conf
-          livenessProbe:
-            periodSeconds: 5
-            failureThreshold: 2
-            httpGet:
-              path: /
-              port: 80
-              scheme: HTTP
+          startupProbe:
+            tcpSocket:
+              port: dns-tcp
+            failureThreshold: 30
+            periodSeconds: 10
           readinessProbe:
-            httpGet:
-              path: /readiness
-              port: 80
-              scheme: HTTP
-            initialDelaySeconds: 20
-            timeoutSeconds: 5
+            tcpSocket:
+              port: dns-tcp
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: dns-tcp
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            failureThreshold: 2
           resources:
             limits:
-              cpu: 0.5
+              cpu: 1000m
               memory: 4096Mi
             requests:
-              cpu: 0.1
+              cpu: 100m
               memory: 512Mi
           securityContext: {}
       terminationGracePeriodSeconds: 30
