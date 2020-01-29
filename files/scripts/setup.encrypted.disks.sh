@@ -4,16 +4,20 @@
 export ROOT_DISK=; \
 export KEYFILE_DISK=a; \
 export DISKS=$(sudo lsblk --scsi --noheadings --list --output KNAME | grep sd[^$KEYFILE_DISK^$ROOT_DISK]); \
-echo $DISKS; \
-echo "# DATA devices" | sudo tee -a /etc/crypttab
+echo $DISKS
+
+# Wipe
 for d in $DISKS; do 
   sudo umount /dev/$d; \
   sudo wipefs -af /dev/$d; \
-  sudo cryptsetup luksFormat -q -s 512 -c aes-xts-plain64 -d /mnt/key/.secretkey /dev/$d; \
+  sudo cryptsetup luksFormat -q -s 512 -c aes-xts-plain64 -d /mnt/key/.secretkey /dev/$d; 
+done;
+
+# Crypttab
+echo "# DATA devices" | sudo tee -a /etc/crypttab
+for d in $DISKS; do 
   export BLKID=$(sudo blkid -s UUID -o value /dev/$d); \
-  sudo tee -a /etc/crypttab <<EOF
-  data-${BLKID}  UUID=${BLKID}    /mnt/key/.secretkey    luks,retry=1,timeout=180
-EOF
+  echo "data-${BLKID}  UUID=${BLKID}    /mnt/key/.secretkey    luks,retry=1,timeout=180"  | sudo tee -a /etc/crypttab; 
 done;
 
 # Now create a `/etc/default/cryptdisks` file so that `/mnt/key` is made available

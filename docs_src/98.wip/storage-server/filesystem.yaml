@@ -2,20 +2,22 @@
 apiVersion: ceph.rook.io/v1
 kind: CephFilesystem
 metadata:
-  name: mediafs-ssd
+  name: myfs-ec
   namespace: rook-ceph
 spec:
   metadataPool:
     failureDomain: osd
-    replicated:
-      size: 1
+    metadataPool:
+      replicated:
+        size: 3
     deviceClass: ssd
   dataPools:
     - failureDomain: osd
-      replicated:
-        size: 1
-      deviceClass: ssd
-  preservePoolsOnDelete: true
+      erasureCoded:
+        dataChunks: 2
+        codingChunks: 1
+      deviceClass: hdd
+  preservePoolsOnDelete: false
   metadataServer:
     activeCount: 1
     activeStandby: true
@@ -23,28 +25,29 @@ spec:
     placement:
     resources:
 ---
-apiVersion: ceph.rook.io/v1
-kind: CephFilesystem
+# https://github.com/rook/rook/blob/b89911ec7f2c5e3ff9bc6445e1588066161fddd8/Documentation/ceph-filesystem.md#provision-storage
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
 metadata:
-  name: mediafs-ec
-  namespace: rook-ceph
-spec:
-  metadataPool:
-    failureDomain: osd
-    erasureCoded:
-      dataChunks: 2
-      codingChunks: 1
-    deviceClass: hdd
-  dataPools:
-    - failureDomain: osd
-      erasureCoded:
-        dataChunks: 2
-        codingChunks: 1
-      deviceClass: hdd
-  preservePoolsOnDelete: true
-  metadataServer:
-    activeCount: 1
-    activeStandby: true
-    annotations:
-    placement:
-    resources:
+  name: rook-cephfs
+provisioner: rook-ceph.cephfs.csi.ceph.com
+parameters:
+  clusterID: rook-ceph
+  # CephFS filesystem name into which the volume shall be created
+  fsName: myfs-ec
+  # Ceph pool into which the volume shall be created
+  # Required for provisionVolume: "true"
+  pool: myfs-ec-data0
+
+  # Root path of an existing CephFS volume
+  # Required for provisionVolume: "false"
+  # rootPath: /absolute/path
+
+  # The secrets contain Ceph admin credentials. These are generated automatically by the operator
+  # in the same namespace as the cluster.
+  csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
+  csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
+  csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
+  csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
+
+reclaimPolicy: Delete
