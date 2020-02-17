@@ -20,7 +20,7 @@ spec:
 apiVersion: ceph.rook.io/v1
 kind: CephBlockPool
 metadata:
-  name: ecpool
+  name: cold-storage
   namespace: rook-ceph
 spec:
   failureDomain: osd

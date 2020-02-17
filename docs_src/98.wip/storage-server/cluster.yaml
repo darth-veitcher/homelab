@@ -21,6 +21,11 @@ spec:
     rulesNamespace: rook-ceph
   network:
     hostNetwork: false
+  # enabler auto-scaling of the pgs
+  mgr:
+    modules:
+    - name: pg_autoscaler
+      enabled: true
   rbdMirroring:
     workers: 0
   annotations:
@@ -31,6 +36,8 @@ spec:
     useAllDevices: false
     config:
     nodes:
+    - name: "banks.local"
+      devicePathFilter: ^/dev/mapper/data.*
     - name: "clarke.local"
       devicePathFilter: ^/dev/mapper/data.*
   disruptionManagement:

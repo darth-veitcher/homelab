@@ -1,0 +1,37 @@
+[Unit]
+Description=Rclone VFS Mount
+After=network-online.target
+
+[Service]
+User=x1le
+Group=x1le
+Type=notify
+ExecStartPre=/bin/sleep 10
+ExecStart=/usr/bin/rclone mount \
+  --user-agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36' \
+  --config=/home/x1le/.config/rclone/rclone.conf \
+  --allow-other \
+  --allow-non-empty \
+  --rc \
+  --rc-addr=localhost:5573 \
+  --fast-list \
+  --drive-skip-gdocs \
+  --vfs-read-chunk-size=64M \
+  --vfs-read-chunk-size-limit=2048M \
+  --buffer-size=64M \
+  --poll-interval=1m \
+  --dir-cache-time=168h \
+  --timeout=10m \
+  --drive-chunk-size=64M \
+  --umask=002 \
+  --syslog \
+  -v \
+  downloads: /mnt/remote/downloads
+ExecStop=/bin/fusermount -uz /mnt/remote/downloads
+Restart=on-abort
+RestartSec=5
+StartLimitInterval=60s
+StartLimitBurst=3
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+# kind: DaemonSet
+metadata:
+  name: mergerfs-mount
+  namespace: rook-ceph
+  labels:
+    app: mergerfs-mount
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mergerfs-mount
+  template:
+    metadata:
+      labels:
+        app: mergerfs-mount
+    spec:
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+      - name: mergerfs-mount
+        image: saracen9/mergerfs-mount
+        command: ["mergerfs"]
+        args: ["-o", "async_read=false,use_ino,allow_other,auto_cache,func.getattr=newest,category.action=all,category.create=ff,threads=12",
+               "/mnt/cluster/Media:/mnt/remote/Media", "/mnt/unionfs/Media"]
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: true
+          capabilities:
+            add: ["SYS_ADMIN"]
+        lifecycle:
+          preStop:
+            exec:
+              command: ["fusermount", "-uz", "/mnt/unionfs/Media"]
+        volumeMounts:
+          - mountPath: /dev
+            name: dev
+          - mountPath: /sys/bus
+            name: sysbus
+          - mountPath: /lib/modules
+            name: libmodules
+          - name: mount-path-cluster
+            mountPath: /mnt/cluster
+            mountPropagation: Bidirectional
+          - name: mount-path-remote
+            mountPath: /mnt/remote
+            mountPropagation: Bidirectional
+          - name: mount-path-unionfs
+            mountPath: /mnt/unionfs
+            mountPropagation: Bidirectional
+      # if hostNetwork: false, the "rbd map" command hangs, see https://github.com/rook/rook/issues/2021
+      # hostNetwork: true
+      volumes:
+        - name: dev
+          hostPath:
+            path: /dev
+        - name: sysbus
+          hostPath:
+            path: /sys/bus
+        - name: libmodules
+          hostPath:
+            path: /lib/modules
+        - name: mount-path-cluster
+          # https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
+          hostPath:
+            path: /mnt/cluster
+            type: Directory
+        - name: mount-path-remote
+          # https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
+          hostPath:
+            path: /mnt/remote
+            type: Directory
+        - name: mount-path-unionfs
+          # https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
+          hostPath:
+            path: /mnt/unionfs
+            type: DirectoryOrCreate

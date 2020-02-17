@@ -1,0 +1,146 @@
+{
+    "core": {
+        "dry_run": false,
+        "rclone_binary_path": "/usr/bin/rclone",
+        "rclone_config_path": "/home/x1le/.config/rclone/rclone.conf"
+    },
+    "hidden": {
+        "/mnt/local/.unionfs-fuse": {
+            "hidden_remotes": [
+                "google",
+                "downloads"
+            ]
+        }
+    },
+    "notifications": {
+    },
+    "nzbget": {
+        "enabled": false,
+        "url": "https://x1le:thecakeisalie@nzbget.yarr.wtf"
+    },
+    "plex": {
+        "enabled": true,
+        "url": "https://plex.yarr.wtf",
+        "token": "PTs9ajFNpsixUEpxWCU5",
+        "poll_interval": 60,
+        "notifications": false,
+        "max_streams_before_throttle": 1,
+        "rclone": {
+            "throttle_speeds": {
+                "0": "1000M",
+                "1": "50M",
+                "2": "40M",
+                "3": "30M",
+                "4": "20M",
+                "5": "10M"
+            },
+            "url": "http://localhost:7949"
+        }
+    },
+    "remotes": {
+        "google": {
+            "hidden_remote": "google:",
+            "rclone_excludes": [
+                "**partial~",
+                "**_HIDDEN~",
+                ".unionfs/**",
+                ".unionfs-fuse/**",
+                ".fuse_hidden**"
+            ],
+            "rclone_extras": {
+                "--user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36",
+                "--checkers": 16,
+                "--drive-chunk-size": "128M",
+                "--stats": "60s",
+                "--transfers": 8,
+                "--verbose": 1,
+                "--skip-links": null,
+                "--retries": 1,
+                "--low-level-retries": 2
+            },
+            "rclone_sleeps": {
+                "Failed to copy: googleapi: Error 403: User rate limit exceeded": {
+                    "count": 10,
+                    "sleep": 25,
+                    "timeout": 7200
+                },
+                " 0/s,": {
+                    "count": 16,
+                    "sleep": 25,
+                    "timeout": 62
+                }
+            },
+            "rclone_command": "move",
+            "remove_empty_dir_depth": 2,
+            "sync_remote": "media:Media",
+            "upload_folder": "/mnt/local/Media",
+            "upload_remote": "media:Media"
+        },
+        "downloads": {
+            "hidden_remote": "downloads:",
+            "rclone_excludes": [
+                "**partial~",
+                "**_HIDDEN~",
+                ".unionfs/**",
+                ".unionfs-fuse/**",
+                ".fuse_hidden**"
+            ],
+            "rclone_extras": {
+                "--user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36",
+                "--checkers": 16,
+                "--drive-chunk-size": "128M",
+                "--stats": "60s",
+                "--transfers": 8,
+                "--verbose": 1,
+                "--skip-links": null,
+                "--retries": 1,
+                "--low-level-retries": 2
+            },
+            "rclone_sleeps": {
+                "Failed to copy: googleapi: Error 403: User rate limit exceeded": {
+                    "count": 10,
+                    "sleep": 25,
+                    "timeout": 7200
+                },
+                " 0/s,": {
+                    "count": 16,
+                    "sleep": 25,
+                    "timeout": 62
+                }
+            },
+            "rclone_command": "move",
+            "remove_empty_dir_depth": 2,
+            "sync_remote": "downloads:",
+            "upload_folder": "/mnt/local/downloads",
+            "upload_remote": "downloads:"
+        }
+    },
+    "syncer": {
+    },
+    "uploader": {
+        "google": {
+            "check_interval": 10,
+            "exclude_open_files": false,
+            "max_size_gb": 200,
+            "opened_excludes": [
+                "/downloads/"
+            ],
+            "size_excludes": [
+                "downloads/*"
+            ],
+            "service_account_path": ""
+        },
+        "downloads": {
+            "check_interval": 10,
+            "exclude_open_files": true,
+            "max_size_gb": 1000,
+            "opened_excludes": [
+                "/downloads/"
+            ],
+            "size_excludes": [
+                "downloads/*"
+            ],
+            "service_account_path": ""
+        }
+    }
+}
