@@ -25,7 +25,8 @@ nav:
         - 'Load Balancer': '01.infrastructure/02.kubernetes/02.metallb.md'
         - 'Ingress': '01.infrastructure/02.kubernetes/03.ingress.md'
     - 'TLS Certificates Management': '01.infrastructure/03.certificates/00.cert.manager.md'
-    - 'CEPH Storage with Rook': 
+    - 'Cluster Storage': '01.infrastructure/04.storage/00.bare.metal.md'
+    - 'CEPH Storage with Rook (deprecated)': 
       - 'Install the Cluster': '01.infrastructure/04.storage/00.setup.ceph.storage.with.rook.md'
       - 'Setup Dashboard': '01.infrastructure/04.storage/01.dashboard.md'
       - 'Storage Configuration': 
