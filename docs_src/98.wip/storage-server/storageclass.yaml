@@ -1,0 +1,30 @@
+# https://github.com/rook/rook/blob/b89911ec7f2c5e3ff9bc6445e1588066161fddd8/Documentation/ceph-filesystem.md#provision-storage
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: rook-cephfs
+provisioner: rook-ceph.cephfs.csi.ceph.com
+parameters:
+  clusterID: rook-ceph
+  # CephFS filesystem name into which the volume shall be created
+  fsName: myfs-ec
+  # Ceph pool into which the volume shall be created
+  # Required for provisionVolume: "true"
+  pool: myfs-ec-data0
+
+  # Root path of an existing CephFS volume
+  # Required for provisionVolume: "false"
+  # rootPath: /absolute/path
+
+  # The secrets contain Ceph admin credentials. These are generated automatically by the operator
+  # in the same namespace as the cluster.
+  csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
+  csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
+  csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
+  csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
+
+  # https://github.com/rook/rook/blob/release-1.2/Documentation/ceph-advanced-configuration.md#use-custom-ceph-user-and-secret-for-mounting
+  # mountUser: nodes
+  # mountSecret: ceph-nodes-secret
+
+reclaimPolicy: Delete

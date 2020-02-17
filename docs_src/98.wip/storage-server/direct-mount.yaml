@@ -1,5 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mount-config
+  namespace: rook-ceph
+data:
+  mount.sh: |
+    #!/bin/bash
+    mon_endpoints=$(grep mon_host /etc/ceph/ceph.conf | awk '{print $3}')
+    my_secret=$(grep key /etc/ceph/keyring | awk '{print $3}')
+    sudo mount -t ceph -o mds_namespace=myfs-ec,name=admin,secret=$my_secret $mon_endpoints:/ /mnt/cluster
+---
 apiVersion: apps/v1
 kind: Deployment
+# kind: DaemonSet
 metadata:
   name: rook-direct-mount
   namespace: rook-ceph
@@ -23,6 +36,7 @@ spec:
         args: ["-g", "--", "/usr/local/bin/toolbox.sh"]
         imagePullPolicy: IfNotPresent
         env:
+          # https://github.com/rook/rook/blob/release-1.2/Documentation/ceph-advanced-configuration.md
           - name: ROOK_ADMIN_SECRET
             valueFrom:
               secretKeyRef:
@@ -30,6 +44,13 @@ spec:
                 key: admin-secret
         securityContext:
           privileged: true
+        lifecycle:
+          postStart:
+            exec:
+              command: ["bash /mount.sh"]
+          preStop:
+            exec:
+              command: ["sudo umount /mnt/cluster"]
         volumeMounts:
           - mountPath: /dev
             name: dev
@@ -41,6 +62,10 @@ spec:
             mountPath: /etc/rook
           - name: mount-path
             mountPath: /mnt/cluster
+            mountPropagation: Bidirectional
+          - name: mount-config
+            mountPath: /mount.sh
+            subPath: mount.sh
       # if hostNetwork: false, the "rbd map" command hangs, see https://github.com/rook/rook/issues/2021
       hostNetwork: true
       volumes:
@@ -64,3 +89,6 @@ spec:
           hostPath:
             path: /mnt/cluster
             type: DirectoryOrCreate
+        - name: mount-config
+          configMap:
+            name: mount-config

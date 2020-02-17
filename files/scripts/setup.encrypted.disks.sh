@@ -1,9 +1,10 @@
 #!/bin/sh
 # Wipes disks excluding the ROOT and USB keyfile and then encrypts them with the USB key.
 # Needs to be run as root.
-export ROOT_DISK=; \
-export KEYFILE_DISK=a; \
-export DISKS=$(sudo lsblk --scsi --noheadings --list --output KNAME | grep sd[^$KEYFILE_DISK^$ROOT_DISK]); \
+export ROOT_DISK=
+export KEYFILE_DISK=a
+DISKS=$(sudo lsblk --scsi --noheadings --list --output KNAME | grep sd[^$KEYFILE_DISK^$ROOT_DISK])
+echo "\n# Configuring for:"
 echo $DISKS
 
 # Wipe
