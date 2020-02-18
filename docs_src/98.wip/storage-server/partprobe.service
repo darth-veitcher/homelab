@@ -1,0 +1,13 @@
+# /etc/systemd/system/partprobe.service
+[Unit]
+Description=Fulldisk Encryption Partition Discovery
+Requires=dm-event.socket
+After=cryptsetup.target
+Before=local-fs.target unmount.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c "partprobe $(ls /dev/mapper/data-ssd-*)"
+
+[Install]
+WantedBy=multi-user.target mergerfs.service

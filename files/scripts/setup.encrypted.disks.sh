@@ -18,7 +18,8 @@ done;
 echo "# DATA devices" | sudo tee -a /etc/crypttab
 for d in $DISKS; do 
   export BLKID=$(sudo blkid -s UUID -o value /dev/$d); \
-  echo "data-${BLKID}  UUID=${BLKID}    /mnt/key/.secretkey    luks,retry=1,timeout=180"  | sudo tee -a /etc/crypttab; 
+  export ROTA=$(sudo lsblk -n -o rota /dev/$d | sed "s/1/hdd/g" | sed "s/0/ssd/g" | sed "s/ //g"); \
+  echo "data-${ROTA}-${BLKID}  UUID=${BLKID}    /mnt/key/.secretkey    luks,retry=1,timeout=180"  | sudo tee -a /etc/crypttab; 
 done;
 
 # Now create a `/etc/default/cryptdisks` file so that `/mnt/key` is made available
