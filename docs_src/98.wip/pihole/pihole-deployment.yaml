@@ -39,7 +39,7 @@ spec:
             protocol: UDP
           env:
             - name: ServerIP
-              value: 192.168.0.222
+              value: 192.168.0.122
             - name: WEBPASSWORD
               valueFrom:
                 secretKeyRef:
@@ -90,7 +90,7 @@ spec:
       - name: config
         # https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
         hostPath:
-          path: /opt/pihole
+          path: /mnt/local/storage/kubernetes/pihole
           type: DirectoryOrCreate
       - name: custom-dnsmasq
         configMap:

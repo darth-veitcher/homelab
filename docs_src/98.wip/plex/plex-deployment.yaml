@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: plex-config
+  namespace: media
+  labels:
+    app: plex
+data:
+  TZ: "Europe/London"
+  ADVERTISE_IP: "http://192.168.0.123:32400/"
+  PLEX_UID: "1000"
+  PLEX_GID: "1000"
+  CHANGE_CONFIG_DIR_OWNERSHIP: "false"
+  ALLOWED_NETWORKS: "10.244.0.0/16"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plex
+  namespace: media
+  labels:
+    app: plex
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: plex
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: plex
+      namespace: media
+    spec:
+      containers:
+        - name: plex
+          image: plexinc/pms-docker
+          ports:
+          # https://support.plex.tv/articles/201543147-what-network-ports-do-i-need-to-allow-through-my-firewall/
+          - containerPort: 32400
+            name: pms
+            protocol: TCP
+          - containerPort: 1900
+            name: dnla-udp
+            protocol: UDP
+          - containerPort: 32469
+            name: dnla-tcp
+            protocol: TCP
+          - containerPort: 3005
+            name: home-theatre
+            protocol: TCP
+          - containerPort: 5353
+            name: discovery
+            protocol: TCP
+          - containerPort: 8324
+            name: roku
+            protocol: TCP
+          - containerPort: 32410
+            protocol: UDP
+          - containerPort: 32412
+            protocol: UDP
+          - containerPort: 32413
+            protocol: UDP
+          - containerPort: 32414
+            protocol: UDP
+          envFrom:
+            - configMapRef:
+                name: plex-config
+          env:
+            # Secrets
+            - name: PLEX_CLAIM
+              valueFrom:
+                secretKeyRef:
+                  name: plex-claim-token
+                  key: token
+          volumeMounts:
+          - mountPath: /config
+            name: config
+          - mountPath: /transcode
+            name: transcode
+          - mountPath: /data
+            name: media
+      # Only run this at home
+      # https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+      nodeSelector:
+        topology.kubernetes.io/region: house
+      # https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        nameservers:
+          - 192.168.0.122
+      volumes:
+      - name: config
+        hostPath:
+          path: /mnt/unionfs/storage/plex/config
+          type: DirectoryOrCreate
+      - name: transcode
+        hostPath:
+          path: /mnt/plex/transcodes
+          type: DirectoryOrCreate
+      - name: media
+        hostPath:
+          path: /mnt/unionfs/media
+          type: DirectoryOrCreate

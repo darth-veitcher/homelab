@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: plex-udp
+  namespace: media
+  annotations:
+    metallb.universe.tf/allow-shared-ip: plex-svc
+  labels:
+    app: enternal-dns
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 192.168.0.123
+  externalTrafficPolicy: Local
+  ports:
+    - name: dnla-udp
+      port: 1900
+      protocol: UDP
+      targetPort: dnla-udp
+    - name: gdm32410
+      port: 32410
+      protocol: UDP
+      targetPort: 32410
+    - name: gdm32412
+      port: 32412
+      protocol: UDP
+      targetPort: 32412
+    - name: gdm32413
+      port: 32413
+      protocol: UDP
+      targetPort: 32413
+    - name: gdm32414
+      port: 32414
+      protocol: UDP
+      targetPort: 32414
+  selector:
+    app: plex
+  sessionAffinity: None
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: plex-tcp
+  namespace: media
+  annotations:
+    metallb.universe.tf/allow-shared-ip: plex-svc
+  labels:
+    app: plex
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 192.168.0.123
+  externalTrafficPolicy: Local
+  ports:
+    - name: pms
+      port: 32400
+      protocol: TCP
+      targetPort: pms
+    - name: home-theatre
+      port: 3005
+      protocol: TCP
+      targetPort: home-theatre
+    - name: discovery
+      port: 5353
+      protocol: TCP
+      targetPort: discovery
+    - name: roku
+      port: 8324
+      protocol: TCP
+      targetPort: roku
+    - name: dnla-tcp
+      port: 32469
+      protocol: TCP
+      targetPort: dnla-tcp
+  selector:
+    app: plex
+  sessionAffinity: None
