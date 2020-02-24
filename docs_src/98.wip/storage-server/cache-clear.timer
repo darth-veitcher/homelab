@@ -1,0 +1,11 @@
+# /etc/systemd/system/cache-clear.timer
+[Unit]
+Description=Cache Clear Timer
+
+[Timer]
+OnBootSec=5min
+OnCalendar=*:0/1
+Unit=cache-clear.service
+
+[Install]
+WantedBy=basic.target

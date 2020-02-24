@@ -1,0 +1,10 @@
+# /etc/systemd/system/cache-sync.service
+[Unit]
+Description=Synchronises the cache to backing media
+Wants=cache-sync.timer
+
+[Service]
+User=adminlocal
+Group=adminlocal
+# (24hr * 60min) * 0.01 = 14.4mins
+ExecStart=/opt/cache/cache-sync.sh /mnt/disks/hot-storage /mnt/disks/media 0.01

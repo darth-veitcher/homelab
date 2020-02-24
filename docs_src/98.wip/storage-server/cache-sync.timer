@@ -1,0 +1,11 @@
+# /etc/systemd/system/cache-sync.timer
+[Unit]
+Description=Cache Sync Timer
+
+[Timer]
+OnBootSec=5min
+OnCalendar=*:0/1
+Unit=cache-sync.servixe
+
+[Install]
+WantedBy=basic.target

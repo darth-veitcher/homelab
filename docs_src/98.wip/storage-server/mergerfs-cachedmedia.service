@@ -1,0 +1,17 @@
+# /etc/systemd/system/mergerfs-cachedmedia.service
+[Unit]
+Description=MergerFS Mount (Media Cache)
+After=network-online.target
+
+[Service]
+Type=forking
+GuessMainPID=no
+ExecStart=/usr/bin/mergerfs \
+  -o category.create=ff,async_read=false,cache.files=partial \
+  -o dropcacheonclose=true,use_ino,minfreespace=0 \
+  -o xattr=nosys,statfs_ignore=ro,allow_other,umask=002,noatime \
+  /mnt/disks/hot-storage=RW:/mnt/disks/media=RW /mnt/local/media
+ExecStop=/bin/fusermount -u /mnt/local/media
+
+[Install]
+WantedBy=default.target mergerfs-media.service

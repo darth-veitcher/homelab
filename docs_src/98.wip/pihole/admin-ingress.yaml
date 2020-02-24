@@ -1,0 +1,55 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: pihole
+  namespace: home
+spec:
+  secretName: pihole-certs
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+  organization:
+  - jamesveitch
+  commonName: pihole.jamesveitch.dev
+  isCA: false
+  keySize: 2048
+  keyAlgorithm: rsa
+  keyEncoding: pkcs1
+  usages:
+    - server auth
+    - client auth
+  dnsNames:
+  - pihole.jamesveitch.dev
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+    group: cert-manager.io
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: pihole-external-ingress
+  namespace: home
+  labels:
+    app: pihole
+    tier: frontend
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/issuer: "letsencrypt"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /admin/$1
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/server-snippet: |
+      proxy_ssl_verify off;
+spec:
+  tls:
+  - hosts:
+    - pihole.jamesveitch.dev
+    secretName: pihole-certs
+  rules:
+  - host: pihole.jamesveitch.dev
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: pihole-tcp
+          servicePort: pihole-https

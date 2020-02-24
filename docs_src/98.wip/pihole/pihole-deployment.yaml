@@ -78,8 +78,29 @@ spec:
       terminationGracePeriodSeconds: 30
       # Only run this at home
       # https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
-      nodeSelector:
-        topology.kubernetes.io/region: house
+      # nodeSelector:
+      #   topology.kubernetes.io/region: house
+      # https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+      affinity:
+        nodeAffinity:
+          # Only run this at home
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: topology.kubernetes.io/region
+                operator: In
+                values:
+                - house
+          # If possible run on the dedicated dns box
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - dns
+                - core
       # https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
       dnsPolicy: ClusterFirst
       dnsConfig:

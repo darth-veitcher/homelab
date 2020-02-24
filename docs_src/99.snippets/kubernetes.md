@@ -9,6 +9,7 @@ sudo apt-get -y purge kubeadm kubectl kubelet kubernetes-cni kube*; \
 sudo apt-get -y autoremove; \
 sudo rm -rf ~/.kube; \
 sudo rm -rf /etc/kubernetes; \
+sudo rm -rf /opt/cni/bin; \
 sudo rm -rf /var/lib/etcd
 
 sudo shutdown -r now

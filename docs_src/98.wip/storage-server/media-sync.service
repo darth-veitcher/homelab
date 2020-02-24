@@ -1,0 +1,9 @@
+# /etc/systemd/system/media-sync.service
+[Unit]
+Description=Synchronises the media to unionfs
+Wants=media-sync.timer
+
+[Service]
+User=adminlocal
+Group=adminlocal
+ExecStart=/opt/cache/media-sync.sh rsync://10.10.0.1/media/ /mnt/local/media/

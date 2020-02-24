@@ -1,0 +1,9 @@
+# /etc/systemd/system/cache-clear.service
+[Unit]
+Description=clear the cache down to a set utilisation %
+Wants=cache-clear.timer
+
+[Service]
+User=adminlocal
+Group=adminlocal
+ExecStart=/opt/cache/cache-clear.sh /mnt/disks/hot-storage /mnt/disks/media 60
