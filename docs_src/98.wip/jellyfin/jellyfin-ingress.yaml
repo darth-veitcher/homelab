@@ -1,0 +1,51 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: jellyfin
+  namespace: media
+spec:
+  secretName: jellyfin-certs
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+  organization:
+  - yarr
+  commonName: jellyfin.yarr.wtf
+  isCA: false
+  keySize: 2048
+  keyAlgorithm: rsa
+  keyEncoding: pkcs1
+  usages:
+    - server auth
+    - client auth
+  dnsNames:
+  - jellyfin.yarr.wtf
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+    group: cert-manager.io
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: jellyfin-external-ingress
+  namespace: media
+  labels:
+    app: jellyfin
+    tier: frontend
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/issuer: "letsencrypt"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  tls:
+  - hosts:
+    - jellyfin.yarr.wtf
+    secretName: jellyfin-certs
+  rules:
+  - host: jellyfin.yarr.wtf
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: jellyfin-tcp
+          servicePort: http

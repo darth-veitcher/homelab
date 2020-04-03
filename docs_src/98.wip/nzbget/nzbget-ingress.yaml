@@ -1,0 +1,51 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: nzbget
+  namespace: media
+spec:
+  secretName: nzbget-certs
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+  organization:
+  - yarr
+  commonName: nzbget.k8s.yarr.wtf
+  isCA: false
+  keySize: 2048
+  keyAlgorithm: rsa
+  keyEncoding: pkcs1
+  usages:
+    - server auth
+    - client auth
+  dnsNames:
+  - nzbget.k8s.yarr.wtf
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+    group: cert-manager.io
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: nzbget-external-ingress
+  namespace: media
+  labels:
+    app: nzbget
+    tier: frontend
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/issuer: "letsencrypt"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  tls:
+  - hosts:
+    - nzbget.k8s.yarr.wtf
+    secretName: nzbget-certs
+  rules:
+  - host: nzbget.k8s.yarr.wtf
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: nzbget-tcp
+          servicePort: nzbget

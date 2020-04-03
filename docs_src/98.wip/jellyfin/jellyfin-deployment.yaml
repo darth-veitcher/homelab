@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyfin
+  namespace: media
+  labels:
+    app: jellyfin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyfin
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: jellyfin
+      namespace: media
+    spec:
+      containers:
+        - name: jellyfin
+          image: jellyfin/jellyfin:latest
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "0.2"
+              ephemeral-storage: "2Gi"
+            limits:
+              memory: "8Gi"
+              cpu: "1"
+              ephemeral-storage: "4Gi"
+          ports:
+          # https://jellyfin.org/docs/general/networking/index.html
+          - containerPort: 8096
+            name: http
+            protocol: TCP
+          - containerPort: 8920
+            name: https
+            protocol: TCP
+          - containerPort: 1900
+            name: discovery
+            protocol: UDP
+          - containerPort: 7359
+            name: clients
+            protocol: UDP
+          volumeMounts:
+          - mountPath: /config
+            name: config
+          - mountPath: /cache
+            name: cache
+          - mountPath: /media
+            name: media
+      # Only run this at home
+      # https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+      # nodeSelector:
+      #   topology.kubernetes.io/region: house
+      # https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+      affinity:
+        nodeAffinity:
+          # Only run this at home
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: topology.kubernetes.io/region
+                operator: In
+                values:
+                - house
+          # If possible run on the dedicated dns box
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - media
+      # https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
+      # dnsPolicy: ClusterFirst
+      # dnsConfig:
+      #   nameservers:
+      #     - 192.168.0.122
+      volumes:
+      - name: config
+        hostPath:
+          path: /mnt/unionfs/storage/jellyfin/config
+          type: DirectoryOrCreate
+      - name: cache
+        hostPath:
+          path: /mnt/disks/hot-storage/jellyfin/cache
+          type: DirectoryOrCreate
+      - name: media
+        hostPath:
+          # replace `xxx` with actual mountpoint
+          path: /mnt/unionfs/xxx
+          type: DirectoryOrCreate

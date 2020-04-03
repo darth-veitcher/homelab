@@ -1,0 +1,101 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sabnzbd-config
+  namespace: media
+  labels:
+    app: sabnzbd
+data:
+  TZ: "Europe/London"
+  PUID: "1000"
+  PGID: "1000"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sabnzbd
+  namespace: media
+  labels:
+    app: sabnzbd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sabnzbd
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: sabnzbd
+      namespace: media
+    spec:
+      containers:
+        - name: sabnzbd
+          image: linuxserver/sabnzbd
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "0.2"
+              ephemeral-storage: "2Gi"
+            limits:
+              memory: "4Gi"
+              cpu: "1"
+              ephemeral-storage: "4Gi"
+          ports:
+          - containerPort: 8080
+            name: sabnzbd
+            protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: sabnzbd-config
+          volumeMounts:
+          - mountPath: /config
+            name: config
+          - mountPath: /incomplete-downloads
+            name: intermediate
+          - mountPath: /downloads
+            name: media
+      # Only run this at home
+      # https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+      # nodeSelector:
+      #   topology.kubernetes.io/region: house
+      # https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+      affinity:
+        nodeAffinity:
+          # Only run this at home
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: topology.kubernetes.io/region
+                operator: In
+                values:
+                - house
+          # If possible run on the dedicated dns box
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - media
+      # https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
+      # dnsPolicy: ClusterFirst
+      # dnsConfig:
+      #   nameservers:
+      #     - 192.168.0.122
+      volumes:
+      - name: config
+        hostPath:
+          path: /mnt/unionfs/storage/sabnzbd/config
+          type: DirectoryOrCreate
+      - name: intermediate
+        hostPath:
+          path: /mnt/local/storage/sabnzbd/intermediate
+          type: DirectoryOrCreate
+      - name: media
+        hostPath:
+          # replace `xxx` with actual mountpoint
+          path: /mnt/unionfs/xxx
+          type: DirectoryOrCreate
